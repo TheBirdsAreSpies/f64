@@ -1,0 +1,44 @@
+{
+  "name": "f64",
+  "private": true,
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "typecheck": "nuxt typecheck",
+    "lint:fix": "eslint --fix",
+    "test": "vitest --environment nuxt",
+    "prisma:generate": "bun x prisma generate",
+    "prisma:push": "bun x prisma db push",
+    "prisma:push:reset": "bun x prisma db push --force-reset"
+  },
+  "dependencies": {
+    "@antfu/eslint-config": "^6.6.1",
+    "@iconify-json/lucide": "^1.2.80",
+    "@iconify-json/simple-icons": "^1.2.62",
+    "@nuxt/hints": "1.0.0-alpha.3",
+    "@nuxt/image": "2.0.0",
+    "@nuxt/ui": "^4.2.1",
+    "@nuxtjs/i18n": "^10.2.1",
+    "@prisma/adapter-mariadb": "^7.1.0",
+    "@prisma/client": "^7.1.0",
+    "dotenv": "^17.2.3",
+    "eslint": "nuxt/eslint",
+    "nuxt": "^4.2.2",
+    "nuxt-auth-utils": "0.5.26",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.12.1",
+    "@types/node": "^25.0.1",
+    "eslint": "^9.39.2",
+    "prisma": "^7.1.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.1.8"
+  }
+}
