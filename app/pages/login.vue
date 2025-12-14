@@ -72,7 +72,7 @@ async function onSubmitStandard(payload: FormSubmitEvent<any>) {
 
   const session = useUserSession()
   await session.fetch()
-  navigateTo("/protected")
+  navigateTo("/")
 }
 
 function onForgotPassword() {
