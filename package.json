@@ -25,12 +25,13 @@
     "@nuxt/image": "2.0.0",
     "@nuxt/ui": "^4.2.1",
     "@nuxtjs/i18n": "^10.2.1",
+    "@pinia/nuxt": "0.11.3",
     "@prisma/adapter-mariadb": "^7.1.0",
     "@prisma/client": "^7.1.0",
     "dotenv": "^17.2.3",
-    "eslint": "nuxt/eslint",
     "nuxt": "^4.2.2",
     "nuxt-auth-utils": "0.5.26",
+    "pinia": "^3.0.4",
     "zod": "^4.1.13"
   },
   "devDependencies": {
