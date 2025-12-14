@@ -402,7 +402,7 @@ function isActive(path: string) {
   const currentPath = route.path.replace(/^\/(en|de)/, "") // Remove locale prefix
   const targetPath = path.replace(/^\/(en|de)/, "")
 
-  if (targetPath === "/admin" && currentPath === "/admin")
+  if (targetPath === "/admin" && (currentPath === "/admin" || currentPath === "" || currentPath === "/"))
     return true
   if (targetPath !== "/admin" && currentPath.startsWith(targetPath))
     return true
