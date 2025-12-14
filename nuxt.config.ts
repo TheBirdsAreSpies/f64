@@ -7,6 +7,7 @@ export default defineNuxtConfig({
     "@nuxt/image",
     "nuxt-auth-utils",
     "@nuxtjs/i18n",
+    "@pinia/nuxt",
   ],
   devtools: {
     enabled: true,
