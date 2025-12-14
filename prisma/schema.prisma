@@ -14,16 +14,24 @@ datasource db {
 }
 
 model User {
-  id        String @id @default(cuid())
-  email     String @unique
-  firstName String
-  lastName  String
-  password  String
+  id                String    @id @default(cuid())
+  email             String    @unique
+  firstName         String
+  lastName          String
+  password          String
+  emailVerified     Boolean   @default(false)
+  verificationToken String?   @unique
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime? @updatedAt
 
-  posts   Post[]
-  apiKeys ApiKey[]
-  logs    Log[]
-  roles   Role[]
+  posts    Post[]
+  apiKeys  ApiKey[]
+  logs     Log[]
+  roles    Role[]
+  photos   Photo[]
+  albums   Album[]
+  comments Comment[]
+  likes    Like[]
 }
 
 model Post {
@@ -33,6 +41,112 @@ model Post {
   published Boolean @default(false)
   author    User    @relation(fields: [authorId], references: [id])
   authorId  String
+}
+
+model Album {
+  id           String   @id @default(cuid())
+  title        String
+  description  String?  @db.Text
+  slug         String   @unique
+  visibility   String   @default("public") // public, private, password
+  password     String?
+  coverPhotoId String?
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdBy    String
+  updatedBy    String?
+
+  creator    User    @relation(fields: [createdBy], references: [id])
+  coverPhoto Photo?  @relation("AlbumCover", fields: [coverPhotoId], references: [id])
+  photos     Photo[] @relation("PhotoAlbums")
+  tags       Tag[]
+
+  @@index([visibility])
+  @@index([createdAt])
+}
+
+model Photo {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?   @db.Text
+  filename      String
+  originalPath  String
+  thumbnailPath String
+  width         Int?
+  height        Int?
+  fileSize      Int?
+  mimeType      String?
+  exifData      String?   @db.Text
+  sortOrder     Int       @default(0)
+  visibility    String    @default("public") // public, private
+  isFavorite    Boolean   @default(false)
+  isFeatured    Boolean   @default(false)
+  uploadedAt    DateTime  @default(now())
+  takenAt       DateTime?
+  updatedAt     DateTime  @updatedAt
+  uploadedBy    String
+
+  uploader    User      @relation(fields: [uploadedBy], references: [id])
+  albums      Album[]   @relation("PhotoAlbums")
+  albumCovers Album[]   @relation("AlbumCover")
+  tags        Tag[]
+  comments    Comment[]
+  likes       Like[]
+
+  @@index([uploadedAt])
+  @@index([visibility])
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  color     String?
+  createdAt DateTime @default(now())
+
+  photos Photo[]
+  albums Album[]
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  photoId   String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@index([photoId])
+  @@index([userId])
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  photoId   String
+  userId    String
+  createdAt DateTime @default(now())
+
+  photo Photo @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id])
+
+  @@unique([photoId, userId])
+  @@index([photoId])
+  @@index([userId])
+}
+
+model Theme {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  isActive  Boolean  @default(false)
+  variables String   @db.Text // JSON string of CSS variables
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+  updatedBy String?
 }
 
 model ApiKey {
