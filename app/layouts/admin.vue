@@ -119,11 +119,11 @@
           </div>
         </div>
         <div
-          v-if="albums?.albums?.length"
+          v-if="albumsStore.albums?.length"
           class="space-y-1 max-h-48 overflow-y-auto px-2"
         >
           <UButton
-            v-for="album in albums.albums.slice(0, 10)"
+            v-for="album in albumsStore.albums.slice(0, 10)"
             :key="album.id"
             :to="localePath(`/admin/albums/${album.slug}`)"
             variant="ghost"
@@ -358,6 +358,7 @@
 
 <script setup lang="ts">
 import { de, en } from "@nuxt/ui/locale"
+import { useAlbumsStore } from "~/stores/albums"
 
 interface Tag {
   id: string
@@ -385,7 +386,9 @@ interface YearStat {
   count: number
 }
 
-const { data: albums } = await useFetch("/api/v1/albums", { query: { limit: 10 } })
+const albumsStore = useAlbumsStore()
+await albumsStore.fetchAlbums(10)
+
 const { data: tags } = await useFetch<TagsResponse>("/api/v1/tags", { query: { limit: 15 } })
 const { data: years } = await useFetch<YearStat[]>("/api/v1/admin/photos/years")
 
