@@ -18,6 +18,7 @@
             color="primary"
             variant="link"
             class="font-medium m-0 p-0"
+            tabindex="-1"
             @click="onForgotPassword"
           >
             {{ t('login_forgot_password') }}
