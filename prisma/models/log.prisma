@@ -1,0 +1,28 @@
+model LogRequestType {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  logs Log[]
+}
+
+model LogLevel {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  logs Log[]
+}
+
+model Log {
+  id               Int      @id @default(autoincrement())
+  message          String
+  endpoint         String
+  error            String?
+  userId           String?
+  logLevelId       Int
+  logRequestTypeId Int
+  createdAt        DateTime @default(now())
+
+  logLevel       LogLevel       @relation(fields: [logLevelId], references: [id])
+  user           User?          @relation(fields: [userId], references: [id])
+  logRequestType LogRequestType @relation(fields: [logRequestTypeId], references: [id])
+}

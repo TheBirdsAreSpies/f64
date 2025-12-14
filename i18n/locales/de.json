@@ -1,0 +1,12 @@
+{
+  "login_title": "Anmelden",
+  "login_enter_credentials": "Bitte Anmeldedaten eingeben",
+  "login_forgot_password": "Passwort vergessen?",
+  "login_email": "E-Mail",
+  "login_email_placeholder": "Gib deine E-Mail ein",
+  "login_password": "Passwort",
+  "login_password_placeholder": "Gib dein Passwort ein",
+  "login_validation_invalid_email": "Bitte gib eine gültige E-Mail-Adresse ein.",
+  "login_validation_required": "{field} ist erforderlich.",
+  "login_validation_min_length": "Mindestens {count} Zeichen erforderlich."
+}

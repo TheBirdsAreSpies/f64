@@ -14,7 +14,8 @@
     "test": "vitest --environment nuxt",
     "prisma:generate": "bun x prisma generate",
     "prisma:push": "bun x prisma db push",
-    "prisma:push:reset": "bun x prisma db push --force-reset"
+    "prisma:push:reset": "bun x prisma db push --force-reset",
+    "prisma:seed": "bun x prisma db seed"
   },
   "dependencies": {
     "@antfu/eslint-config": "^6.6.1",
