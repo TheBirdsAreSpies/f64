@@ -38,6 +38,7 @@ definePageMeta({
 })
 
 const { t } = useI18n()
+const localePath = useLocalePath()
 // const toast = useToast()
 
 const standardLoginSchema = computed(() =>
@@ -76,7 +77,7 @@ async function onSubmitStandard(payload: FormSubmitEvent<any>) {
 
   const session = useUserSession()
   await session.fetch()
-  navigateTo("/")
+  navigateTo(localePath("/"))
 }
 
 function onForgotPassword() {
