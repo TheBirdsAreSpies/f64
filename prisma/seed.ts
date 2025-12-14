@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { prisma } from "../lib/prisma"
 import { AlbumPermission, PhotoPermission, PostPermission, TagPermission, ThemePermission, UserPermission } from "../server/types/permissions"
 

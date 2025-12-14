@@ -1,14 +1,15 @@
+<!-- eslint-disable vue/html-button-has-type -->
 <template>
   <div>
     <header>
       <AuthState>
         <template #default="{ loggedIn, clear }">
-          <button
-            v-if="loggedIn"
-            @click="clear"
-          >
-            Logout
-          </button>
+          <div v-if="loggedIn">
+            <button @click="clear">
+              Logout
+            </button>
+            Hello, {{ loggedIn ? user?.firstName : 'Guest' }}!
+          </div>
           <NuxtLink
             v-else
             to="/login"
@@ -98,3 +99,7 @@
     </UPageSection>
   </div>
 </template>
+
+<script setup lang="ts">
+const { user } = useUserSession()
+</script>
