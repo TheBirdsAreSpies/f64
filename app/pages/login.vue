@@ -33,6 +33,10 @@
 import type { AuthFormField, FormSubmitEvent } from "@nuxt/ui"
 import { createStandardLoginSchema } from "~~/shared/schemas/auth.schema"
 
+definePageMeta({
+  middleware: ["guest"],
+})
+
 const { t } = useI18n()
 // const toast = useToast()
 
