@@ -120,16 +120,29 @@ export async function extractImageMetadata(file: File): Promise<{
 
       const extractXmpNumber = (tag: string): number | undefined => {
         const value = extractXmpValue(tag)
-        return value ? Number.parseFloat(value) : undefined
+        if (!value)
+          return undefined
+
+        // Handle rational numbers like "63/10" or "1/800"
+        if (value.includes("/")) {
+          const [numerator, denominator] = value.split("/").map(Number)
+          return denominator ? numerator / denominator : undefined
+        }
+
+        return Number.parseFloat(value)
       }
+
+      const exposureTimeXmp = extractXmpNumber("exif:ExposureTime")
+      const fNumberXmp = extractXmpNumber("exif:FNumber")
+      const focalLengthXmp = extractXmpNumber("exif:FocalLength")
 
       exifData = {
         make: extractXmpValue("tiff:Make"),
         model: extractXmpValue("tiff:Model"),
-        exposureTime: extractXmpNumber("exif:ExposureTime"),
-        fNumber: extractXmpNumber("exif:FNumber"),
+        exposureTime: exposureTimeXmp,
+        fNumber: fNumberXmp,
         iso: extractXmpNumber("exif:ISOSpeedRatings"),
-        focalLength: extractXmpNumber("exif:FocalLength"),
+        focalLength: focalLengthXmp,
         lens: extractXmpValue("aux:Lens") || extractXmpValue("exifEX:LensModel"),
         dateTime: extractXmpValue("xmp:CreateDate") || extractXmpValue("exif:DateTimeOriginal"),
       }
