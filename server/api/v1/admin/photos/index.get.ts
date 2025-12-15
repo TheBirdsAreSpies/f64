@@ -50,6 +50,7 @@ export default defineEventHandler(async (event) => {
         thumbnailPath: true,
         originalPath: true,
         visibility: true,
+        rotation: true,
         uploadedAt: true,
         isFavorite: true,
         isFeatured: true,

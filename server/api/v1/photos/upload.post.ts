@@ -79,7 +79,11 @@ export default defineEventHandler(async (event) => {
       exifData: imageMetadata.exif ? JSON.stringify(imageMetadata.exif) : null,
       visibility: validated.visibility,
       uploadedBy: session.user.id,
-      takenAt: validated.takenAt ? new Date(validated.takenAt) : null,
+      takenAt: validated.takenAt
+        ? new Date(validated.takenAt)
+        : imageMetadata.exif?.dateTime
+          ? new Date(imageMetadata.exif.dateTime)
+          : null,
       albums: validated.albumIds?.length
         ? {
             connect: validated.albumIds.map(id => ({ id })),

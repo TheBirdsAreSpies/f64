@@ -21,9 +21,15 @@ export interface Photo {
   iso?: number | null
   focalLength?: number | null
   lensModel?: string | null
+  rotation?: number
   _count?: {
     likes?: number
   }
+}
+
+export interface PhotoDetail extends Photo {
+  tags?: Array<{ id: string, name: string }>
+  albums?: Array<{ id: string, title: string }>
 }
 
 export interface PhotosResponse {

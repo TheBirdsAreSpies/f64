@@ -87,6 +87,7 @@ model Photo {
   iso           Int?
   focalLength   Float?
   lensModel     String?
+  rotation      Int       @default(0) // rotation in degrees: 0, 90, 180, 270
   sortOrder     Int       @default(0)
   visibility    String    @default("public") // public, private
   isFavorite    Boolean   @default(false)
