@@ -86,11 +86,11 @@ export async function extractImageMetadata(file: File): Promise<{
     let exifData
 
     // Helper function to evaluate rational values (e.g., "1/100" -> 0.01)
-    const evalRational = (val: number | number[] | undefined): number | undefined => {
+    const evalRational = (val: number | [number, number] | undefined): number | undefined => {
       if (typeof val === "number")
         return val
       if (Array.isArray(val) && val.length === 2)
-        return val[0] / val[1]
+        return (val as [number, number])[0] / (val as [number, number])[1]
       return undefined
     }
 
