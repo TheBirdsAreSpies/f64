@@ -15,8 +15,13 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: "No file provided" })
   }
 
-  if (!file.type.startsWith("image/")) {
-    throw createError({ statusCode: 400, message: "File must be an image" })
+  // Distinguish between image and RAW files
+  const rawExtensions = [".cr2", ".cr3", ".nef", ".arw", ".dng", ".raf", ".orf", ".rw2", ".pef", ".srw"]
+  const fileExtension = file.name.toLowerCase().match(/\.[^.]+$/)?.[0] || ""
+  const isRawFile = rawExtensions.includes(fileExtension)
+
+  if (!file.type.startsWith("image/") && !isRawFile) {
+    throw createError({ statusCode: 400, message: "File must be an image or RAW file" })
   }
 
   const description = formData.get("description")
@@ -36,7 +41,6 @@ export default defineEventHandler(async (event) => {
 
   const validated = photoUploadSchema.parse(metadata)
 
-  // Check if file already exists based on hash
   const fileHash = await calculateFileHash(file)
   const existingPhoto = await prisma.photo.findFirst({
     where: { fileHash },
@@ -47,9 +51,10 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 409, message: `This photo has already been uploaded: "${existingPhoto.title}"` })
   }
 
-  const { filename, path: originalPath, size } = await saveUploadedFile(file)
-  const thumbnailPath = await createThumbnail(originalPath)
-  const imageMetadata = await extractImageMetadata(file)
+  const { filename, path: originalPath, size } = await saveUploadedFile(file, "uploads/photos", isRawFile)
+
+  const thumbnailPath = await createThumbnail(originalPath, false)
+  const imageMetadata = await extractImageMetadata(file, isRawFile)
 
   const photo = await prisma.photo.create({
     data: {

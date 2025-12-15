@@ -20,9 +20,41 @@
                 <UFileUpload
                   v-model="uploadedFiles"
                   multiple
-                  accept="image/*"
-                  :preview="true"
+                  :label="t('upload_select_photos')"
+                  accept="image/*,.cr2,.cr3,.nef,.arw,.dng,.raf,.orf,.rw2,.pef,.srw"
+                  :preview="false"
                 />
+                <!-- Custom Preview Grid -->
+                <div
+                  v-if="selectedFiles.length > 0"
+                  class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4"
+                >
+                  <div
+                    v-for="(item, index) in selectedFiles"
+                    :key="index"
+                    class="relative aspect-square rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden"
+                  >
+                    <img
+                      v-if="item.preview"
+                      :src="item.preview"
+                      :alt="item.name"
+                      class="w-full h-full object-cover"
+                    />
+                    <div
+                      v-else
+                      class="w-full h-full flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900"
+                    >
+                      <UIcon
+                        name="lucide:file-image"
+                        class="w-12 h-12 text-gray-400"
+                      />
+                      <span class="text-xs text-gray-500 mt-2 px-2 text-center">RAW</span>
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-2 truncate">
+                      {{ item.name }}
+                    </div>
+                  </div>
+                </div>
                 <UButton
                   v-if="uploadedFiles && uploadedFiles.length > 0"
                   color="neutral"
@@ -166,21 +198,55 @@ const form = reactive({
   visibility: "public",
 })
 
-watch(uploadedFiles, (files) => {
+watch(uploadedFiles, async (files) => {
   if (!files)
     return
 
-  selectedFiles.value.forEach(({ preview }) => URL.revokeObjectURL(preview))
+  selectedFiles.value.forEach(({ preview }) => {
+    if (preview)
+      URL.revokeObjectURL(preview)
+  })
   selectedFiles.value = []
 
+  const rawExtensions = [".cr2", ".cr3", ".nef", ".arw", ".dng", ".raf", ".orf", ".rw2", ".pef", ".srw"]
+
   for (const file of files) {
-    const preview = URL.createObjectURL(file)
+    const fileExtension = file.name.toLowerCase().match(/\.[^.]+$/)?.[0] || ""
+    const isRaw = rawExtensions.includes(fileExtension)
+
+    let preview = ""
+
+    if (isRaw) {
+      // Extract embedded JPEG from RAW file via server endpoint
+      try {
+        const formData = new FormData()
+        formData.append("file", file)
+
+        const blob = await $fetch<Blob>("/api/v1/photos/extract-thumbnail", {
+          method: "POST",
+          body: formData,
+          responseType: "blob",
+        })
+
+        preview = URL.createObjectURL(blob)
+      } catch (error) {
+        console.error("Failed to extract RAW thumbnail:", error)
+        preview = ""
+      }
+    } else {
+      // Regular images, create object URL for preview
+      preview = URL.createObjectURL(file)
+    }
+
     selectedFiles.value.push({ file, preview, name: file.name })
   }
 })
 
 function removeAll() {
-  selectedFiles.value.forEach(({ preview }) => URL.revokeObjectURL(preview))
+  selectedFiles.value.forEach(({ preview }) => {
+    if (preview)
+      URL.revokeObjectURL(preview)
+  })
   selectedFiles.value = []
   uploadedFiles.value = null
 }
@@ -287,7 +353,9 @@ async function onSubmit() {
     for (let i = filesToRemove.length - 1; i >= 0; i--) {
       const index = filesToRemove[i]
       if (index !== undefined && selectedFiles.value[index]) {
-        URL.revokeObjectURL(selectedFiles.value[index].preview)
+        const preview = selectedFiles.value[index].preview
+        if (preview)
+          URL.revokeObjectURL(preview)
         selectedFiles.value.splice(index, 1)
       }
     }
@@ -315,6 +383,9 @@ async function onSubmit() {
 }
 
 onUnmounted(() => {
-  selectedFiles.value.forEach(({ preview }) => URL.revokeObjectURL(preview))
+  selectedFiles.value.forEach(({ preview }) => {
+    if (preview)
+      URL.revokeObjectURL(preview)
+  })
 })
 </script>
