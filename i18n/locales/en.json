@@ -70,4 +70,11 @@
   "dashboard_recent_activity": "Recent Activity",
   "dashboard_no_photos": "No photos yet",
   "dashboard_no_activity": "No recent activity",
+  "photos_title": "Photo Library",
+  "photos_description": "Manage and organize your photos",
+  "photos_upload": "Upload Photos",
+  "photos_filter_all": "All Photos",
+  "photos_filter_my_photos": "My Photos",
+  "photos_empty_title": "No photos yet",
+  "photos_empty_description": "Start by uploading your first photos to the gallery"
 }

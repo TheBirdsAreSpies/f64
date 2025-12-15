@@ -70,4 +70,11 @@
   "dashboard_recent_activity": "Letzte Aktivität",
   "dashboard_no_photos": "Noch keine Fotos",
   "dashboard_no_activity": "Keine aktuellen Aktivitäten",
+  "photos_title": "Fotobibliothek",
+  "photos_description": "Verwalte und organisiere deine Fotos",
+  "photos_upload": "Fotos hochladen",
+  "photos_filter_all": "Alle Fotos",
+  "photos_filter_my_photos": "Meine Fotos",
+  "photos_empty_title": "Noch keine Fotos",
+  "photos_empty_description": "Beginne damit, deine ersten Fotos in die Galerie hochzuladen"
 }
