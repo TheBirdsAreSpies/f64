@@ -77,7 +77,15 @@ model Photo {
   height        Int?
   fileSize      Int?
   mimeType      String?
-  exifData      String?   @db.Text
+  colorSpace    String?
+  exifData      String?   @db.Text // JSON string with all EXIF data
+  cameraMake    String?
+  cameraModel   String?
+  exposureTime  Float?
+  fNumber       Float?
+  iso           Int?
+  focalLength   Float?
+  lensModel     String?
   sortOrder     Int       @default(0)
   visibility    String    @default("public") // public, private
   isFavorite    Boolean   @default(false)

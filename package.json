@@ -29,14 +29,18 @@
     "@prisma/adapter-mariadb": "^7.1.0",
     "@prisma/client": "^7.1.0",
     "dotenv": "^17.2.3",
+    "exif-reader": "^2.0.3",
     "nuxt": "^4.2.2",
     "nuxt-auth-utils": "0.5.26",
     "pinia": "^3.0.4",
+    "sharp": "^0.34.5",
     "zod": "^4.1.13"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.12.1",
+    "@types/exif-reader": "^2.0.2",
     "@types/node": "^25.0.1",
+    "@types/sharp": "^0.32.0",
     "eslint": "^9.39.2",
     "prisma": "^7.1.0",
     "tsx": "^4.21.0",
