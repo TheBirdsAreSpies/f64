@@ -1,5 +1,5 @@
 import { prisma } from "~~/lib/prisma"
-import { albumCreateSchema } from "~~/server/schemas/photo.schema"
+import { albumCreateSchema } from "~~/server/schemas/album.schema"
 import { AlbumPermission } from "~~/server/types/permissions"
 import { checkPermission } from "~~/server/utils/checkPermission"
 
