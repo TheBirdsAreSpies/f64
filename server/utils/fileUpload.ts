@@ -127,7 +127,7 @@ export async function extractImageMetadata(file: File, isRaw: boolean = false): 
 
         let width: number | undefined
         let height: number | undefined
-        if (sizeMatch) {
+        if (sizeMatch && sizeMatch[1] && sizeMatch[2]) {
           width = Number.parseInt(sizeMatch[1])
           height = Number.parseInt(sizeMatch[2])
         }
@@ -240,7 +240,7 @@ export async function extractImageMetadata(file: File, isRaw: boolean = false): 
         // Handle rational numbers like "63/10" or "1/800"
         if (value.includes("/")) {
           const [numerator, denominator] = value.split("/").map(Number)
-          return denominator ? numerator / denominator : undefined
+          return denominator && numerator ? numerator / denominator : undefined
         }
 
         return Number.parseFloat(value)
