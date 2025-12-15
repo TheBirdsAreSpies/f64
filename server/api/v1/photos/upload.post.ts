@@ -2,7 +2,7 @@ import { prisma } from "~~/lib/prisma"
 import { photoUploadSchema } from "~~/server/schemas/photo.schema"
 import { PhotoPermission } from "~~/server/types/permissions"
 import { checkPermission } from "~~/server/utils/checkPermission"
-import { createThumbnail, extractImageMetadata, saveUploadedFile } from "~~/server/utils/fileUpload"
+import { calculateFileHash, createThumbnail, extractImageMetadata, saveUploadedFile } from "~~/server/utils/fileUpload"
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
@@ -12,10 +12,7 @@ export default defineEventHandler(async (event) => {
   const file = formData.get("file") as File
 
   if (!file) {
-    throw createError({
-      statusCode: 400,
-      message: "No file provided",
-    })
+    throw createError({ statusCode: 400, message: "No file provided" })
   }
 
   if (!file.type.startsWith("image/")) {
@@ -39,6 +36,17 @@ export default defineEventHandler(async (event) => {
 
   const validated = photoUploadSchema.parse(metadata)
 
+  // Check if file already exists based on hash
+  const fileHash = await calculateFileHash(file)
+  const existingPhoto = await prisma.photo.findFirst({
+    where: { fileHash },
+    select: { id: true, title: true, originalPath: true },
+  })
+
+  if (existingPhoto) {
+    throw createError({ statusCode: 409, message: `This photo has already been uploaded: "${existingPhoto.title}"` })
+  }
+
   const { filename, path: originalPath, size } = await saveUploadedFile(file)
   const thumbnailPath = await createThumbnail(originalPath)
   const imageMetadata = await extractImageMetadata(file)
@@ -51,6 +59,7 @@ export default defineEventHandler(async (event) => {
       originalPath,
       thumbnailPath,
       fileSize: size,
+      fileHash,
       mimeType: imageMetadata.mimeType,
       width: imageMetadata.width,
       height: imageMetadata.height,

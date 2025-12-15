@@ -6,6 +6,11 @@ import process from "node:process"
 import exifReader from "exif-reader"
 import sharp from "sharp"
 
+export async function calculateFileHash(file: File): Promise<string> {
+  const buffer = Buffer.from(await file.arrayBuffer())
+  return crypto.createHash("sha256").update(buffer).digest("hex")
+}
+
 export async function saveUploadedFile(file: File, uploadDir: string = "uploads/photos"): Promise<{ filename: string, path: string, size: number }> {
   const publicDir = path.join(process.cwd(), "public", uploadDir)
 

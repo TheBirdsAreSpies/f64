@@ -232,9 +232,18 @@ async function onSubmit() {
     return
 
   uploading.value = true
+  const toast = useToast()
+  let successCount = 0
+  let duplicateCount = 0
+  let errorCount = 0
+  const filesToRemove: number[] = []
 
   try {
-    for (const { file, name } of selectedFiles.value) {
+    for (let i = 0; i < selectedFiles.value.length; i++) {
+      const item = selectedFiles.value[i]
+      if (!item)
+        continue
+      const { file, name } = item
       const formData = new FormData()
       formData.append("file", file)
       formData.append("title", name.replace(/\.[^/.]+$/, "")) // Remove extension
@@ -242,15 +251,64 @@ async function onSubmit() {
       formData.append("visibility", form.visibility)
       formData.append("tags", JSON.stringify(form.tags))
 
-      await $fetch("/api/v1/photos/upload", {
-        method: "POST",
-        body: formData,
+      try {
+        await $fetch("/api/v1/photos/upload", {
+          method: "POST",
+          body: formData,
+        })
+        successCount++
+        filesToRemove.push(i)
+      } catch (error: any) {
+        console.error("Upload error:", error)
+        const statusCode = error.statusCode || error.response?.status
+
+        if (statusCode === 409) {
+          // Duplicate file
+          duplicateCount++
+          toast.add({
+            title: t("upload_duplicate_title"),
+            description: t("upload_duplicate_message", { name }),
+            color: "warning",
+            icon: "lucide:circle-alert",
+          })
+        } else {
+          errorCount++
+          toast.add({
+            title: t("upload_error_title"),
+            description: t("upload_error_message", { name }),
+            color: "error",
+            icon: "lucide:circle-x",
+          })
+        }
+      }
+    }
+
+    // Remove successfully uploaded files from the list
+    for (let i = filesToRemove.length - 1; i >= 0; i--) {
+      const index = filesToRemove[i]
+      if (index !== undefined && selectedFiles.value[index]) {
+        URL.revokeObjectURL(selectedFiles.value[index].preview)
+        selectedFiles.value.splice(index, 1)
+      }
+    }
+
+    // Update the file input
+    if (filesToRemove.length > 0) {
+      uploadedFiles.value = selectedFiles.value.length > 0 ? selectedFiles.value.map(f => f.file) : null
+    }
+
+    if (successCount > 0) {
+      toast.add({
+        title: t("upload_success_title"),
+        description: t("upload_success_message", { count: successCount }),
+        color: "success",
+        icon: "lucide:circle-check",
       })
     }
 
-    navigateTo(localePath("/admin/photos"))
-  } catch (error) {
-    console.error("Upload failed:", error)
+    if (errorCount === 0 && duplicateCount === 0) {
+      navigateTo(localePath("/admin/photos"))
+    }
   } finally {
     uploading.value = false
   }
