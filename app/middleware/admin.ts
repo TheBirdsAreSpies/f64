@@ -1,6 +1,7 @@
 import type { User } from "~~/shared/types/user"
 
 export default defineNuxtRouteMiddleware(async (to) => {
+  const localePath = useLocalePath()
   const { loggedIn, user, fetch } = useUserSession()
 
   if (!user.value) {
@@ -9,7 +10,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (!loggedIn.value) {
     return navigateTo({
-      path: "/login",
+      path: localePath("/login"),
       query: {
         redirect: to.fullPath,
       },
@@ -22,7 +23,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
     })
 
     if (!userData || !userData.roles || userData.roles.length === 0) {
-      return navigateTo("/")
+      return navigateTo(localePath("/"))
     }
 
     const hasAdminRole = userData.roles.some(
@@ -30,17 +31,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
     )
 
     if (!hasAdminRole) {
-      return navigateTo("/")
+      return navigateTo(localePath("/"))
     }
   } catch (error: any) {
     if (error?.statusCode === 401 || error?.status === 401) {
       return navigateTo({
-        path: "/login",
+        path: localePath("/login"),
         query: {
           redirect: to.fullPath,
         },
       })
     }
-    return navigateTo("/")
+    return navigateTo(localePath("/"))
   }
 })

@@ -1,4 +1,5 @@
 export default defineNuxtRouteMiddleware(async (to) => {
+  const localePath = useLocalePath()
   const { loggedIn, user, fetch } = useUserSession()
 
   if (!user.value) {
@@ -7,7 +8,7 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   if (!loggedIn.value) {
     return navigateTo({
-      path: "/login",
+      path: localePath("/login"),
       query: {
         redirect: to.fullPath,
       },
