@@ -144,9 +144,9 @@
       class="flex justify-center"
     >
       <UPagination
-        v-model="page"
+        v-model:page="page"
         :total="photos.pagination.total"
-        :page-count="photos.pagination.limit"
+        :items-per-page="photos.pagination.limit"
       />
     </div>
   </div>
@@ -166,34 +166,32 @@ const router = useRouter()
 const { t, d } = useI18n()
 const localePath = useLocalePath()
 
-const page = ref(1)
+const page = ref(Number.parseInt(route.query.page as string) || 1)
 const filter = ref<string | null>(route.query.filter as string || null)
 
-const queryParams = computed(() => ({
-  page: page.value,
-  limit: 20,
-  ...(filter.value && { filter: filter.value }),
-  ...(route.query.year && { year: route.query.year }),
-}))
-
-const { data: photos, refresh } = await useFetch<PhotosResponse>("/api/v1/admin/photos", {
-  query: queryParams,
+const { data: photos } = await useFetch<PhotosResponse>("/api/v1/admin/photos", {
+  query: {
+    page,
+    limit: 20,
+    filter,
+  },
+  watch: [page, filter],
 })
 
 function setFilter(newFilter: string | null) {
   filter.value = newFilter
   page.value = 1
-  router.push({ query: { ...route.query, filter: newFilter || undefined } })
-  refresh()
+  router.push({ query: { ...route.query, filter: newFilter || undefined, page: undefined } })
 }
 
 watch(() => route.query.filter, (newFilter) => {
   filter.value = newFilter as string || null
-  refresh()
+  page.value = 1
 })
 
-watch(page, () => {
-  refresh()
+watch(page, (newPage) => {
+  router.push({ query: { ...route.query, page: newPage > 1 ? newPage.toString() : undefined } })
+  window.scrollTo({ top: 0, behavior: "smooth" })
 })
 
 function formatDate(date: string) {
