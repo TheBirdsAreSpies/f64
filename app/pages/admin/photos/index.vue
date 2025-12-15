@@ -153,33 +153,12 @@
 </template>
 
 <script setup lang="ts">
+import type { PhotosResponse } from "~~/shared/types/photo"
+
 definePageMeta({
   layout: "admin",
   middleware: ["admin"],
 })
-
-interface Photo {
-  id: string
-  title: string
-  thumbnailPath: string
-  originalPath: string
-  visibility: string
-  uploadedAt: string
-  isFavorite: boolean
-  isFeatured: boolean
-  width: number
-  height: number
-}
-
-interface PhotosResponse {
-  photos: Photo[]
-  pagination: {
-    page: number
-    limit: number
-    total: number
-    totalPages: number
-  }
-}
 
 const route = useRoute()
 const router = useRouter()
