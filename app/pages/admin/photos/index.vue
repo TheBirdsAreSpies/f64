@@ -76,6 +76,7 @@
           :src="photo.thumbnailPath"
           :alt="photo.title"
           class="w-full h-full object-cover"
+          loading="lazy"
         />
         <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
           <div class="flex justify-between items-start">

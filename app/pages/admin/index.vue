@@ -199,6 +199,7 @@
                   :src="photo.thumbnailPath"
                   :alt="photo.title"
                   class="w-full h-full object-cover"
+                  loading="lazy"
                 />
               </div>
               <div class="flex-1">
