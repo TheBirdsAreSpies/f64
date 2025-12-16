@@ -10,6 +10,8 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "mysql://root:password@localhost:3306/f64"
 
     steps:
       - name: Checkout
@@ -36,6 +38,8 @@ jobs:
     needs: ci
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    env:
+      DATABASE_URL: "mysql://root:password@localhost:3306/f64"
     
     permissions:
       contents: read
