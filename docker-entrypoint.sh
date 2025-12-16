@@ -1,5 +1,5 @@
 #!/bin/sh
-bun x prisma db push --skip-generate
+bun x prisma db push
 
 if [ "$RUN_SEED" = "true" ]; then
   echo "Running database seed..."
