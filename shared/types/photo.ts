@@ -24,6 +24,7 @@ export interface Photo {
   rotation?: number
   _count?: {
     likes?: number
+    comments?: number
   }
 }
 
