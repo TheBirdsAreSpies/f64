@@ -3,7 +3,7 @@
     <UHeader>
       <template #title>
         <NuxtLink
-          to="/"
+          :to="localePath('/')"
           class="flex items-center gap-3"
         >
           <AppLogo />
@@ -41,13 +41,13 @@
                 class="flex gap-2"
               >
                 <UButton
-                  to="/login"
+                  :to="localePath('/login')"
                   color="neutral"
                   variant="ghost"
                 >
                   {{ t('nav_login') }}
                 </UButton>
-                <UButton to="/register">
+                <UButton :to="localePath('/register')">
                   {{ t('nav_register') }}
                 </UButton>
               </div>
