@@ -9,13 +9,13 @@
           :to="localePath('/admin')"
           color="neutral"
           variant="ghost"
-          icon="i-lucide-arrow-left"
+          icon="lucide:arrow-left"
           :label="t('common_back')"
         />
         <UButton
           color="primary"
           variant="outline"
-          icon="i-lucide-settings"
+          icon="lucide:settings"
           :label="t('admin_album_edit')"
           @click="editAlbum"
         />
