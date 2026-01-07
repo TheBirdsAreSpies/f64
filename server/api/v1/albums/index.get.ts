@@ -25,7 +25,17 @@ export default defineEventHandler(async (event) => {
           select: {
             thumbnailPath: true,
             title: true,
+            rotation: true,
           },
+        },
+        photos: {
+          select: {
+            thumbnailPath: true,
+            title: true,
+            rotation: true,
+          },
+          orderBy: { id: "desc" },
+          take: 1,
         },
         _count: {
           select: { photos: true },
