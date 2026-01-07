@@ -20,7 +20,7 @@
           :color="isActive('/admin') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:layout-dashboard"
-          :label="$t('nav_dashboard')"
+          :label="t('nav_dashboard')"
           block
           class="justify-start"
         />
@@ -28,7 +28,7 @@
         <!-- Library Section -->
         <div class="pt-4 pb-2 px-3">
           <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            {{ $t('nav_library_section') }}
+            {{ t('nav_library_section') }}
           </p>
         </div>
         <UButton
@@ -36,7 +36,7 @@
           :color="isActive('/admin/photos') && !route.query.filter ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:image"
-          :label="$t('nav_library')"
+          :label="t('nav_library')"
           block
           class="justify-start"
         />
@@ -45,7 +45,7 @@
           :color="isActive('/admin/albums') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:folder"
-          :label="$t('nav_albums')"
+          :label="t('nav_albums')"
           block
           class="justify-start"
         />
@@ -54,7 +54,7 @@
           :color="isActive('/admin/tags') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:tags"
-          :label="$t('nav_tags')"
+          :label="t('nav_tags')"
           block
           class="justify-start"
         />
@@ -63,7 +63,7 @@
           :color="isActive('/admin/trash') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:trash-2"
-          :label="$t('nav_trash')"
+          :label="t('nav_trash')"
           block
           class="justify-start"
         />
@@ -72,7 +72,7 @@
           :color="isFilterActive('favorites') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:star"
-          :label="$t('nav_favorites')"
+          :label="t('nav_favorites')"
           block
           class="justify-start"
         />
@@ -81,7 +81,7 @@
           :color="isFilterActive('featured') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:award"
-          :label="$t('nav_featured')"
+          :label="t('nav_featured')"
           block
           class="justify-start"
         />
@@ -90,7 +90,7 @@
           :color="isFilterActive('unlisted') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:eye-off"
-          :label="$t('nav_unlisted')"
+          :label="t('nav_unlisted')"
           block
           class="justify-start"
         />
@@ -99,7 +99,7 @@
           :color="isFilterActive('private') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:lock"
-          :label="$t('nav_private')"
+          :label="t('nav_private')"
           block
           class="justify-start"
         />
@@ -107,7 +107,7 @@
         <div class="pt-4 pb-2 px-3">
           <div class="flex items-center justify-between">
             <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              {{ $t('nav_albums_section') }}
+              {{ t('nav_albums_section') }}
             </p>
             <UButton
               :to="localePath('/admin/albums/new')"
@@ -146,7 +146,7 @@
           class="px-2 py-4 text-center"
         >
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            {{ $t('nav_albums_empty') }}
+            {{ t('nav_albums_empty') }}
           </p>
         </div>
 
@@ -154,7 +154,7 @@
         <div class="pt-4 pb-2 px-3">
           <div class="flex items-center justify-between">
             <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              {{ $t('nav_tags_section') }}
+              {{ t('nav_tags_section') }}
             </p>
           </div>
         </div>
@@ -179,14 +179,14 @@
           class="px-2 py-4 text-center"
         >
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            {{ $t('nav_tags_empty') }}
+            {{ t('nav_tags_empty') }}
           </p>
         </div>
 
         <!-- Years Section -->
         <div class="pt-4 pb-2 px-3">
           <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            {{ $t('nav_years_section') }}
+            {{ t('nav_years_section') }}
           </p>
         </div>
         <div
@@ -218,13 +218,13 @@
           class="px-2 py-4 text-center"
         >
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            {{ $t('nav_albums_empty') }}
+            {{ t('nav_albums_empty') }}
           </p>
         </div>
 
         <div class="pt-4 pb-2 px-3">
           <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            {{ $t('nav_settings') }}
+            {{ t('nav_settings') }}
           </p>
         </div>
 
@@ -233,7 +233,7 @@
           :color="isActive('/admin/themes') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:palette"
-          :label="$t('nav_themes')"
+          :label="t('nav_themes')"
           block
           class="justify-start"
         />
@@ -242,7 +242,7 @@
           :color="isActive('/admin/settings') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:settings"
-          :label="$t('nav_site_settings')"
+          :label="t('nav_site_settings')"
           block
           class="justify-start"
         />
@@ -251,14 +251,14 @@
           :color="isActive('/admin/users') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:users"
-          :label="$t('nav_users')"
+          :label="t('nav_users')"
           block
           class="justify-start"
         />
 
         <div class="pt-4 pb-2 px-3">
           <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            {{ $t('nav_tools') }}
+            {{ t('nav_tools') }}
           </p>
         </div>
 
@@ -267,7 +267,7 @@
           :color="isFilterActive('last-import') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:clock"
-          :label="$t('nav_last_import')"
+          :label="t('nav_last_import')"
           block
           class="justify-start"
         />
@@ -276,7 +276,7 @@
           :color="isActive('/admin/import') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:upload"
-          :label="$t('nav_import')"
+          :label="t('nav_import')"
           block
           class="justify-start"
         />
@@ -285,7 +285,7 @@
           :color="isActive('/admin/export') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:download"
-          :label="$t('nav_export')"
+          :label="t('nav_export')"
           block
           class="justify-start"
         />
@@ -294,7 +294,7 @@
           :color="isActive('/admin/plugins') ? 'primary' : 'neutral'"
           variant="ghost"
           icon="lucide:puzzle"
-          :label="$t('nav_plugins')"
+          :label="t('nav_plugins')"
           block
           class="justify-start"
         />
@@ -316,7 +316,7 @@
           color="neutral"
           variant="ghost"
           icon="lucide:external-link"
-          :label="$t('nav_view_site')"
+          :label="t('nav_view_site')"
           block
           class="justify-start"
         />
@@ -326,10 +326,10 @@
             <UDropdownMenu
               :items="[
                 [
-                  { label: $t('nav_profile'), icon: 'lucide:user', to: localePath('/admin/profile') },
-                  { label: $t('nav_my_account'), icon: 'lucide:user-cog', to: localePath('/admin/account') },
+                  { label: t('nav_profile'), icon: 'lucide:user', to: localePath('/admin/profile') },
+                  { label: t('nav_my_account'), icon: 'lucide:user-cog', to: localePath('/admin/account') },
                 ],
-                [{ label: $t('nav_logout'), icon: 'lucide:log-out', click: clear }],
+                [{ label: t('nav_logout'), icon: 'lucide:log-out', click: clear }],
               ]"
             >
               <UButton
@@ -392,7 +392,7 @@ await albumsStore.fetchAlbums(10)
 const { data: tags } = await useFetch<TagsResponse>("/api/v1/tags", { query: { limit: 15 } })
 const { data: years } = await useFetch<YearStat[]>("/api/v1/admin/photos/years")
 
-const { locale, setLocale } = useI18n()
+const { t, locale, setLocale } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()
 
