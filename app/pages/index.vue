@@ -1,105 +1,94 @@
-<!-- eslint-disable vue/html-button-has-type -->
 <template>
   <div>
-    <header>
-      <AuthState>
-        <template #default="{ loggedIn, clear }">
-          <div v-if="loggedIn">
-            <button @click="clear">
-              Logout
-            </button>
-            Hello, {{ loggedIn ? user?.firstName : 'Guest' }}!
+    <UPageHeader
+      :title="t('gallery_title')"
+      :description="t('gallery_description')"
+    />
+
+    <UPageBody>
+      <div
+        v-if="albums?.albums?.length"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        <NuxtLink
+          v-for="album in albums.albums"
+          :key="album.id"
+          :to="localePath(`/albums/${album.slug}`)"
+          class="group"
+        >
+          <div class="aspect-video overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
+            <NuxtImg
+              v-if="album.coverPhoto"
+              :src="album.coverPhoto.thumbnailPath"
+              :alt="album.title"
+              :style="`transform: rotate(${album.coverPhoto.rotation || 0}deg) scale(1.1); transition: transform 300ms ease-out;`"
+              class="w-full h-full object-cover group-hover:scale-110"
+              loading="lazy"
+            />
+            <NuxtImg
+              v-else-if="(album as any).photos?.[0]"
+              :src="(album as any).photos[0].thumbnailPath"
+              :alt="(album as any).photos[0].title || album.title"
+              :style="`transform: rotate(${(album as any).photos[0].rotation || 0}deg) scale(1.1); transition: transform 300ms ease-out;`"
+              class="w-full h-full object-cover group-hover:scale-110"
+              loading="lazy"
+            />
+            <div
+              v-else
+              class="w-full h-full flex items-center justify-center"
+            >
+              <UIcon
+                name="lucide:folder"
+                class="text-6xl text-gray-400"
+              />
+            </div>
           </div>
-          <NuxtLink
-            v-else
-            to="/login"
-          >
-            Login
-          </NuxtLink>
-        </template>
-        <template #placeholder>
-          <button disabled>
-            Loading...
-          </button>
-        </template>
-      </AuthState>
-    </header>
+          <div class="mt-3">
+            <h3 class="font-semibold text-lg text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+              {{ album.title }}
+            </h3>
+            <p
+              v-if="album.description"
+              class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2"
+            >
+              {{ album.description }}
+            </p>
+            <div class="flex items-center gap-4 text-sm text-gray-500 mt-2">
+              <span class="flex items-center gap-1">
+                <UIcon name="lucide:image" />
+                {{ album._count?.photos || 0 }} {{ t('gallery_photos') }}
+              </span>
+              <span
+                v-if="album.tags?.length"
+                class="flex items-center gap-1"
+              >
+                <UIcon name="lucide:tag" />
+                {{ album.tags.length }} {{ t('gallery_tags') }}
+              </span>
+            </div>
+          </div>
+        </NuxtLink>
+      </div>
 
-    <UPageHero
-      title="Nuxt Starter Template"
-      description="A production-ready starter template powered by Nuxt UI. Build beautiful, accessible, and performant applications in minutes, not hours."
-      :links="[{
-        label: 'Get started',
-        to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
-        target: '_blank',
-        trailingIcon: 'i-lucide-arrow-right',
-        size: 'xl',
-      }, {
-        label: 'Use this template',
-        to: 'https://github.com/nuxt-ui-templates/starter',
-        target: '_blank',
-        icon: 'i-simple-icons-github',
-        size: 'xl',
-        color: 'neutral',
-        variant: 'subtle',
-      }]"
-    />
-
-    <UPageSection
-      id="features"
-      title="Everything you need to build modern Nuxt apps"
-      description="Start with a solid foundation. This template includes all the essentials for building production-ready applications with Nuxt UI's powerful component system."
-      :features="[{
-        icon: 'i-lucide-rocket',
-        title: 'Production-ready from day one',
-        description: 'Pre-configured with TypeScript, ESLint, Tailwind CSS, and all the best practices. Focus on building features, not setting up tooling.',
-      }, {
-        icon: 'i-lucide-palette',
-        title: 'Beautiful by default',
-        description: 'Leveraging Nuxt UI\'s design system with automatic dark mode, consistent spacing, and polished components that look great out of the box.',
-      }, {
-        icon: 'i-lucide-zap',
-        title: 'Lightning fast',
-        description: 'Optimized for performance with SSR/SSG support, automatic code splitting, and edge-ready deployment. Your users will love the speed.',
-      }, {
-        icon: 'i-lucide-blocks',
-        title: '100+ components included',
-        description: 'Access Nuxt UI\'s comprehensive component library. From forms to navigation, everything is accessible, responsive, and customizable.',
-      }, {
-        icon: 'i-lucide-code-2',
-        title: 'Developer experience first',
-        description: 'Auto-imports, hot module replacement, and TypeScript support. Write less boilerplate and ship more features.',
-      }, {
-        icon: 'i-lucide-shield-check',
-        title: 'Built for scale',
-        description: 'Enterprise-ready architecture with proper error handling, SEO optimization, and security best practices built-in.',
-      }]"
-    />
-
-    <UPageSection>
-      <UPageCTA
-        title="Ready to build your next Nuxt app?"
-        description="Join thousands of developers building with Nuxt and Nuxt UI. Get this template and start shipping today."
-        variant="subtle"
-        :links="[{
-          label: 'Start building',
-          to: 'https://ui.nuxt.com/docs/getting-started/installation/nuxt',
-          target: '_blank',
-          trailingIcon: 'i-lucide-arrow-right',
-          color: 'neutral',
-        }, {
-          label: 'View on GitHub',
-          to: 'https://github.com/nuxt-ui-templates/starter',
-          target: '_blank',
-          icon: 'i-simple-icons-github',
-          color: 'neutral',
-          variant: 'outline',
-        }]"
-      />
-    </UPageSection>
+      <div
+        v-else
+        class="text-center py-16"
+      >
+        <UIcon
+          name="lucide:folder-open"
+          class="text-6xl text-gray-400 mb-4"
+        />
+        <p class="text-xl text-gray-600 dark:text-gray-400">
+          {{ t('gallery_empty') }}
+        </p>
+      </div>
+    </UPageBody>
   </div>
 </template>
 
 <script setup lang="ts">
-const { user } = useUserSession()
+const { t } = useI18n()
+const localePath = useLocalePath()
+
+const { data: albums } = await useFetch("/api/v1/albums")
 </script>
