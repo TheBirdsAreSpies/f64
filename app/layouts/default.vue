@@ -12,36 +12,48 @@
       </template>
 
       <template #right>
-        <AuthState>
-          <template #default="{ user }">
-            <UDropdownMenu
-              v-if="user"
-              :items="getDropdownItems(user)"
-            >
-              <UButton
-                color="neutral"
-                variant="ghost"
-                :label="`${user.firstName} ${user.lastName}`"
-                trailing-icon="lucide:chevron-down"
-              />
-            </UDropdownMenu>
-            <div
-              v-else
-              class="flex gap-2"
-            >
-              <UButton
-                to="/login"
-                color="neutral"
-                variant="ghost"
+        <div class="flex items-center gap-2">
+          <UDropdownMenu :items="languageMenuItems">
+            <UButton
+              color="neutral"
+              variant="ghost"
+              :label="currentLanguageLabel"
+              :leading-icon="currentLanguageIcon"
+              trailing-icon="lucide:chevron-down"
+            />
+          </UDropdownMenu>
+
+          <AuthState>
+            <template #default="{ user }">
+              <UDropdownMenu
+                v-if="user"
+                :items="getDropdownItems(user)"
               >
-                {{ $t('nav_login') }}
-              </UButton>
-              <UButton to="/register">
-                {{ $t('nav_register') }}
-              </UButton>
-            </div>
-          </template>
-        </AuthState>
+                <UButton
+                  color="neutral"
+                  variant="ghost"
+                  :label="`${user.firstName} ${user.lastName}`"
+                  trailing-icon="lucide:chevron-down"
+                />
+              </UDropdownMenu>
+              <div
+                v-else
+                class="flex gap-2"
+              >
+                <UButton
+                  to="/login"
+                  color="neutral"
+                  variant="ghost"
+                >
+                  {{ t('nav_login') }}
+                </UButton>
+                <UButton to="/register">
+                  {{ t('nav_register') }}
+                </UButton>
+              </div>
+            </template>
+          </AuthState>
+        </div>
       </template>
     </UHeader>
 
@@ -54,7 +66,7 @@
 
 <script setup lang="ts">
 const localePath = useLocalePath()
-const { t } = useI18n()
+const { t, locale, setLocale } = useI18n()
 
 const roles = ref<string[] | null>(null)
 const session = useUserSession()
@@ -97,4 +109,29 @@ function getDropdownItems(_user: any) {
 
   return items
 }
+
+const currentLanguageLabel = computed(() => {
+  switch (locale.value) {
+    case "de":
+      return t("lang_german")
+    default:
+      return t("lang_english")
+  }
+})
+
+const languageMenuItems = computed(() => [
+  [
+    { label: t("lang_english"), icon: "circle-flags:gb", onSelect: () => setLocale("en") },
+    { label: t("lang_german"), icon: "circle-flags:de", onSelect: () => setLocale("de") },
+  ],
+])
+
+const currentLanguageIcon = computed(() => {
+  switch (locale.value) {
+    case "de":
+      return "circle-flags:de"
+    default:
+      return "circle-flags:gb"
+  }
+})
 </script>
