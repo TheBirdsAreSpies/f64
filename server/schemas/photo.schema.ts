@@ -17,4 +17,12 @@ export const photoUpdateSchema = z.object({
   tags: z.array(z.string()).optional(),
   takenAt: z.string().optional(),
   sortOrder: z.number().optional(),
+  rotation: z.number().int().min(0).max(360).optional(),
+  cameraMake: z.string().nullable().optional(),
+  cameraModel: z.string().nullable().optional(),
+  fNumber: z.number().nullable().optional(),
+  exposureTime: z.number().nullable().optional(),
+  iso: z.number().int().nullable().optional(),
+  focalLength: z.number().nullable().optional(),
+  lensModel: z.string().nullable().optional(),
 })
