@@ -149,5 +149,10 @@
   "common_submit": "Bestätigen",
   "common_cancel": "Abbrechen",
   "lang_english": "English",
-  "lang_german": "Deutsch"
+  "lang_german": "Deutsch",
+  "gallery_title": "Fotogalerie",
+  "gallery_description": "Durchsuche unsere Albensammlung",
+  "gallery_photos": "Fotos",
+  "gallery_tags": "Tags",
+  "gallery_empty": "Keine Alben gefunden"
 }

@@ -149,5 +149,10 @@
   "common_submit": "Submit",
   "common_cancel": "Cancel",
   "lang_english": "English",
-  "lang_german": "Deutsch"
+  "lang_german": "Deutsch",
+  "gallery_title": "Photo Gallery",
+  "gallery_description": "Browse our collection of albums",
+  "gallery_photos": "photos",
+  "gallery_tags": "tags",
+  "gallery_empty": "No albums found"
 }
