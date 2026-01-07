@@ -1,60 +1,68 @@
-# Nuxt Starter Template
+# f64 Photo Gallery
 
-[![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
+A modern photo management application inspired by Koken, built with Nuxt 4, Nuxt UI 4, and MariaDB.
 
-Use this template to get started with [Nuxt UI](https://ui.nuxt.com) quickly.
+# Docker local tests
+`docker build --build-arg DATABASE_URL="mysql://root:password@localhost:3306/f64" -t f64:test .`
 
-- [Live demo](https://starter-template.nuxt.dev/)
-- [Documentation](https://ui.nuxt.com/docs/getting-started/installation/nuxt)
-
-<a href="https://starter-template.nuxt.dev/" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
-    <img alt="Nuxt Starter Template" src="https://ui.nuxt.com/assets/templates/nuxt/starter-light.png">
-  </picture>
-</a>
-
-> The starter template for Vue is on https://github.com/nuxt-ui-templates/starter-vue.
-
-## Quick Start
-
-```bash [Terminal]
-npm create nuxt@latest -- -t github:nuxt-ui-templates/starter
+```docker
+docker run --rm -p 3000:3000 \
+  -e DATABASE_HOST=host.docker.internal \
+  -e DATABASE_USER=root \
+  -e DATABASE_PASSWORD=password \
+  -e DATABASE_NAME=f64 \
+  -e DATABASE_URL="mysql://root:password@host.docker.internal:3306/f64" \
+  -e NUXT_SESSION_PASSWORD="your-32-character-session-password-here" \
+  -e RUN_SEED=true \
+  f64:test
 ```
 
-## Deploy your own
+## Features
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-name=starter&repository-url=https%3A%2F%2Fgithub.com%2Fnuxt-ui-templates%2Fstarter&demo-image=https%3A%2F%2Fui.nuxt.com%2Fassets%2Ftemplates%2Fnuxt%2Fstarter-dark.png&demo-url=https%3A%2F%2Fstarter-template.nuxt.dev%2F&demo-title=Nuxt%20Starter%20Template&demo-description=A%20minimal%20template%20to%20get%20started%20with%20Nuxt%20UI.)
+### Admin Features ✅
+- Dashboard with statistics and quick actions
+- Upload photos with metadata
+- Create and manage albums
+- Tag system for albums and photos
+- Photo visibility controls (public/private)
+- Album visibility (public/private/password-protected)
+- Granular permission system
+
+### Public Features ✅
+- Browse albums
+- View photos with lightbox
+- Like photos (registered users)
+- Comment on photos (registered users)
+- User registration with email verification
+- Responsive image loading
 
 ## Setup
 
-Make sure to install the dependencies:
-
+1. Install dependencies:
 ```bash
-pnpm install
+bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
-
-```bash
-pnpm dev
+2. Configure environment variables in `.env` - check `env_example` for all needed variables.
+```env
+DATABASE_URL="mysql://user:password@localhost:3306/f64"
+NUXT_SESSION_PASSWORD="your-32-character-secret-key"
 ```
 
-## Production
-
-Build the application for production:
-
+3. Push database schema:
 ```bash
-pnpm build
+bun run prisma:push
 ```
 
-Locally preview production build:
-
+4. Seed database (creates admin user):
 ```bash
-pnpm preview
+bun run prisma:seed
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Default admin credentials:
+- Email: `admin@f64.com`
+- Password: `test`
+
+Default user credentials:
+- Email: `user@f64.com`
+- Password: `test`
