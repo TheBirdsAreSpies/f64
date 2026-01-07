@@ -5,6 +5,7 @@
   "version": "0.0.1",
   "scripts": {
     "build": "nuxt build",
+    "build:winfix": "nuxt build && node fix-windows-build.mjs",
     "dev": "nuxt dev",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -18,9 +19,9 @@
     "prisma:seed": "bun x prisma db seed"
   },
   "dependencies": {
-    "@antfu/eslint-config": "^6.6.1",
-    "@iconify-json/lucide": "^1.2.80",
-    "@iconify-json/simple-icons": "^1.2.62",
+    "@antfu/eslint-config": "^6.7.1",
+    "@iconify-json/lucide": "^1.2.81",
+    "@iconify-json/simple-icons": "^1.2.63",
     "@nuxt/hints": "1.0.0-alpha.3",
     "@nuxt/image": "2.0.0",
     "@nuxt/ui": "^4.2.1",
@@ -35,13 +36,11 @@
     "nuxt-auth-utils": "0.5.26",
     "pinia": "^3.0.4",
     "sharp": "^0.34.5",
-    "zod": "^4.1.13"
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.12.1",
-    "@types/exif-reader": "^2.0.2",
-    "@types/node": "^25.0.1",
-    "@types/sharp": "^0.32.0",
+    "@types/node": "^25.0.2",
     "eslint": "^9.39.2",
     "prisma": "^7.1.0",
     "tsx": "^4.21.0",
