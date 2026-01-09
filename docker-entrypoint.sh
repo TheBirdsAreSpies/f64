@@ -7,14 +7,6 @@ echo "Creating upload subdirectories..."
 mkdir -p /app/public/uploads/photos
 mkdir -p /app/public/uploads/thumbnails
 
-# Symlink for @nuxt/image
-echo "Ensuring symlink for image processing..."
-mkdir -p /app/.output/public
-if [ ! -L /app/.output/public/uploads ]; then
-    ln -sf /app/public/uploads /app/.output/public/uploads
-    echo "Symlink created"
-fi
-
 # Database setup
 echo "Checking database..."
 if command -v bun &> /dev/null; then

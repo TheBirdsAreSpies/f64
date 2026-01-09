@@ -20,6 +20,16 @@ WORKDIR /app
 RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /app/.output ./.output
+
+# Set rights to upload directory
+RUN chown -R node:node /app/.output
+
+RUN mkdir -p /app/public/uploads && \
+  mkdir -p /app/.output/public && \
+  ln -sf /app/public/uploads /app/.output/public/uploads
+
+RUN chown -R node:node /app/.output
+
 COPY --from=build /app/generated ./generated
 COPY --from=build /app/prisma ./prisma
 COPY --from=build /app/prisma.config.ts ./prisma.config.ts
@@ -41,6 +51,8 @@ EXPOSE 3000
 
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
+
+USER node
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["node", ".output/server/index.mjs"]
