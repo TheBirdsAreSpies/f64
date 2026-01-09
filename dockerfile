@@ -28,10 +28,12 @@ COPY --from=build /app/lib ./lib
 COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/node_modules ./node_modules
 
-
 RUN mkdir -p /app/public/uploads && \
   mkdir -p /app/.output/public && \
   ln -sf /app/public/uploads /app/.output/public/uploads
+
+RUN mkdir -p /app/public/uploads/photos /app/public/uploads/thumbnails && \
+  chmod -R 775 /app/public/uploads
 
 COPY --from=oven/bun:1 /usr/local/bin/bun /usr/local/bin/bun
 
@@ -44,10 +46,8 @@ VOLUME ["/app/public/uploads"]
 
 EXPOSE 3000
 
-COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+COPY --chown=node:node docker-entrypoint.sh /app/docker-entrypoint.sh
 RUN chmod +x /app/docker-entrypoint.sh
-
-USER node
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 CMD ["node", ".output/server/index.mjs"]

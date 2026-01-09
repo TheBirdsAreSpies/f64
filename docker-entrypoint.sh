@@ -1,32 +1,40 @@
 #!/bin/sh
 set -e
 
-echo "Setting up application..."
+echo "Starting application setup..."
 
-echo "Creating uploads symlink..."
-mkdir -p /app/public/uploads
+echo "Ensuring upload directories exist..."
+mkdir -p /app/public/uploads/photos /app/public/uploads/thumbnails 2>/dev/null || true
+
+echo "Setting permissions (chmod only)..."
+chmod -R 775 /app/public/uploads 2>/dev/null || true
+
+echo "Ensuring symlink for image processing..."
 mkdir -p /app/.output/public
-
-
-echo "Setting permissions for uploads directory..."
-chown -R node:node /app/public/uploads
-chmod -R 755 /app/public/uploads
-
 if [ ! -L /app/.output/public/uploads ]; then
-    echo "Creating symlink: /app/public/uploads → /app/.output/public/uploads"
     ln -sf /app/public/uploads /app/.output/public/uploads
-else
-    echo "Symlink already exists"
+    echo "Symlink created"
 fi
 
-echo "Verifying symlink..."
-ls -la /app/.output/public/ | grep uploads || echo "Symlink not found!"
-
-if command -v bun &> /dev/null; then
-    echo "Running database migrations (if any)..."
-    bun x prisma db push || echo "Database push failed or not needed"
+echo "Testing write permissions..."
+if touch /app/public/uploads/test-write.txt 2>/dev/null; then
+    rm -f /app/public/uploads/test-write.txt
+    echo "Write permission OK"
 else
-    npx prisma db push || echo "Database push failed or not needed"
+    echo "Cannot write to uploads directory"
+    echo "Trying alternative approach..."
+    
+    if [ -d /app/public/uploads ] && [ "$(ls -A /app/public/uploads 2>/dev/null)" ]; then
+        echo "Files exist in uploads, testing with subdirectories..."
+        chmod 775 /app/public/uploads 2>/dev/null || true
+    fi
+fi
+
+echo "Checking database..."
+if command -v bun &> /dev/null; then
+    bun x prisma db push 2>/dev/null && echo "Database ready" || echo "Database push not needed"
+else
+    npx prisma db push 2>/dev/null && echo "Database ready" || echo "Database push not needed"
 fi
 
 if [ "$RUN_SEED" = "true" ]; then
@@ -38,5 +46,5 @@ if [ "$RUN_SEED" = "true" ]; then
     fi
 fi
 
-echo "Starting application..."
+echo "Starting Nuxt application..."
 exec "$@"
