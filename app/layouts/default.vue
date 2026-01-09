@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="flex flex-col min-h-screen">
     <UHeader>
       <template #title>
         <NuxtLink
@@ -58,15 +58,35 @@
     </UHeader>
 
     <!-- Page Content -->
-    <div class="container mx-auto px-4 py-6">
+    <div class="flex-1 container mx-auto px-4 py-6">
       <slot />
     </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 mt-auto">
+      <div class="container mx-auto px-4 py-6">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600 dark:text-gray-400">
+          <p>{{ t('footer_copyright') }}</p>
+          <p>{{ appVersion }} — {{ t('footer_built', { time: formattedBuildTime }) }}</p>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
 
 <script setup lang="ts">
 const localePath = useLocalePath()
-const { t, locale, setLocale } = useI18n()
+const { t, d, locale, setLocale } = useI18n()
+
+const appVersion = import.meta.env.APP_VERSION || "v1.0.0"
+const buildTimeISO = import.meta.env.BUILD_TIME || new Date().toISOString()
+const formattedBuildTime = computed(() => {
+  try {
+    return d(new Date(buildTimeISO), { dateStyle: "long", timeStyle: "short" })
+  } catch {
+    return buildTimeISO
+  }
+})
 
 const roles = ref<string[] | null>(null)
 const session = useUserSession()

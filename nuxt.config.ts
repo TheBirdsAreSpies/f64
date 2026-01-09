@@ -1,5 +1,9 @@
 /* eslint-disable node/prefer-global/process */
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import pkg from "./package.json" assert { type: "json" }
+
+const buildTime = new Date().toISOString()
+
 export default defineNuxtConfig({
   modules: [
     "@nuxt/eslint",
@@ -19,6 +23,12 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       baseURL: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
+    },
+  },
+  vite: {
+    define: {
+      "import.meta.env.PACKAGE_VERSION": JSON.stringify(pkg.version),
+      "import.meta.env.BUILD_TIME": JSON.stringify(buildTime),
     },
   },
   css: ["~/assets/css/main.css"],

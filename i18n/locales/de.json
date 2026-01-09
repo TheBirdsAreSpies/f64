@@ -154,5 +154,8 @@
   "gallery_description": "Durchsuche unsere Albensammlung",
   "gallery_photos": "Fotos",
   "gallery_tags": "Tags",
-  "gallery_empty": "Keine Alben gefunden"
+  "gallery_empty": "Keine Alben gefunden",
+  "footer_copyright": "© 2024-2025 ƒ/64 — Crafted with ❤️",
+  "footer_version": "v{version}",
+  "footer_built": "Built: {time}"
 }
