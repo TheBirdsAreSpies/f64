@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col min-h-screen">
+  <div class="flex flex-col min-h-dvh overflow-x-hidden">
     <UHeader :to="localePath('/')">
       <template #title>
         <div class="flex items-center gap-3">
@@ -52,11 +52,15 @@
     </div>
 
     <!-- Footer -->
-    <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 mt-auto">
-      <div class="container mx-auto px-4 py-6">
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600 dark:text-gray-400">
-          <p>{{ t('footer_copyright') }}</p>
-          <p>{{ appVersion }} — {{ t('footer_built', { time: formattedBuildTime }) }}</p>
+    <footer class="border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 mt-auto pb-[env(safe-area-inset-bottom)] w-full pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
+      <div class="container mx-auto px-4 py-4 sm:py-6 max-w-full">
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center w-full max-w-3xl mx-auto">
+          <p class="whitespace-normal wrap-break-word leading-snug px-3 sm:px-2 lg:px-3">
+            {{ t('footer_copyright') }}
+          </p>
+          <p class="whitespace-normal wrap-break-word leading-snug px-3 sm:px-2 lg:px-3">
+            {{ appVersion }} — {{ t('footer_built', { time: formattedBuildTime }) }}
+          </p>
         </div>
       </div>
     </footer>
