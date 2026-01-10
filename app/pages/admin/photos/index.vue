@@ -163,7 +163,7 @@
             <NuxtImg
               :src="selectedPhoto.originalPath"
               :alt="selectedPhoto.title"
-              class="w-full h-full object-contain transition-transform duration-300"
+              class="w-full h-full object-contain"
               :style="{ transform: `rotate(${photoRotation}deg)` }"
             />
             <div class="absolute top-2 right-2 flex gap-2">
