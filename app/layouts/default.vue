@@ -2,41 +2,95 @@
   <div class="flex flex-col min-h-dvh overflow-x-hidden">
     <UHeader :to="localePath('/')">
       <template #title>
-        <div class="flex items-center gap-3">
-          <AppLogo />
-          <span class="text-2xl font-bold">ƒ/64</span>
+        <div class="flex items-center gap-1.5 sm:gap-3">
+          <AppLogo class="w-6 h-6 sm:w-8 sm:h-8" />
+          <span class="text-lg sm:text-2xl font-bold">ƒ/64</span>
         </div>
       </template>
-
       <template #right>
-        <div class="flex items-center gap-2">
-          <LanguageSelector />
+        <LanguageSelector class="hidden mr-3 md:block" />
+        <AuthState>
+          <template #default="{ user }">
+            <UDropdownMenu
+              v-if="user"
+              :items="dropdownItems"
+            >
+              <UButton
+                color="neutral"
+                variant="ghost"
+                :label="`${user.firstName} ${user.lastName}`"
+                trailing-icon="lucide:chevron-down"
+                class="hidden md:flex"
+              />
+            </UDropdownMenu>
+            <div
+              v-else
+              class="hidden md:flex gap-2"
+            >
+              <UButton
+                :to="localePath('/login')"
+                color="neutral"
+                variant="ghost"
+              >
+                {{ t('nav_login') }}
+              </UButton>
+              <UButton :to="localePath('/register')">
+                {{ t('nav_register') }}
+              </UButton>
+            </div>
+          </template>
+        </AuthState>
+      </template>
+
+      <template #body>
+        <div class="flex flex-col gap-4">
+          <LanguageSelector class="md:hidden" />
 
           <AuthState>
             <template #default="{ user }">
-              <UDropdownMenu
+              <div
                 v-if="user"
-                :items="dropdownItems"
+                class="flex flex-col gap-3"
               >
+                <div class="text-sm font-medium border-b pb-2">
+                  {{ user.firstName }} {{ user.lastName }}
+                </div>
                 <UButton
+                  v-if="hasRole('admin')"
+                  :to="localePath('/admin')"
+                  icon="lucide:settings"
                   color="neutral"
                   variant="ghost"
-                  :label="`${user.firstName} ${user.lastName}`"
-                  trailing-icon="lucide:chevron-down"
-                />
-              </UDropdownMenu>
+                  block
+                >
+                  {{ t('nav_admin') }}
+                </UButton>
+                <UButton
+                  icon="lucide:log-out"
+                  color="neutral"
+                  variant="ghost"
+                  block
+                  @click="handleLogout"
+                >
+                  {{ t('nav_logout') }}
+                </UButton>
+              </div>
               <div
                 v-else
-                class="flex gap-2"
+                class="flex flex-col gap-3"
               >
                 <UButton
                   :to="localePath('/login')"
                   color="neutral"
                   variant="ghost"
+                  block
                 >
                   {{ t('nav_login') }}
                 </UButton>
-                <UButton :to="localePath('/register')">
+                <UButton
+                  :to="localePath('/register')"
+                  block
+                >
                   {{ t('nav_register') }}
                 </UButton>
               </div>
@@ -110,6 +164,12 @@ watch(
   { immediate: true },
 )
 
+async function handleLogout() {
+  await session.clear()
+  clearPermissions()
+  await navigateTo(localePath("/"))
+}
+
 const dropdownItems = computed(() => {
   const items: any[] = []
 
@@ -122,9 +182,7 @@ const dropdownItems = computed(() => {
       label: t("nav_logout"),
       icon: "lucide:log-out",
       onSelect: async () => {
-        await session.clear()
-        clearPermissions()
-        await navigateTo(localePath("/"))
+        await handleLogout()
       },
     },
   ])
