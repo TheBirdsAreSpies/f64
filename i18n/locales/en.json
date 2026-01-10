@@ -64,6 +64,7 @@
   "photo_details_cancel": "Cancel",
   "photo_details_save": "Save Changes",
   "photo_details_delete": "Delete",
+  "photo_details_view": "View",
   "delete_photo_title": "Delete Photo",
   "delete_photo_message": "Are you sure you want to delete \"{title}\"? This action cannot be undone.",
   "delete_photo_confirm": "Delete",

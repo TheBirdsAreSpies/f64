@@ -191,6 +191,17 @@
               />
             </div>
           </div>
+          <UButton
+            v-if="selectedPhoto"
+            :to="localePath(`/photos/${selectedPhoto.id}`)"
+            color="neutral"
+            variant="ghost"
+            icon="lucide:external-link"
+            target="_blank"
+            class="w-full"
+          >
+            {{ t('photo_details_view') }}
+          </UButton>
 
           <!-- Photo Info -->
           <div class="space-y-4">

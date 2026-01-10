@@ -64,6 +64,7 @@
   "photo_details_cancel": "Abbrechen",
   "photo_details_save": "Änderungen speichern",
   "photo_details_delete": "Löschen",
+  "photo_details_view": "Ansehen",
   "delete_photo_title": "Foto löschen",
   "delete_photo_message": "Möchtest du \"{title}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
   "delete_photo_confirm": "Löschen",
