@@ -512,6 +512,11 @@ const albumOptions = computed(() => [
 ])
 
 async function openPhotoDetails(photoId: string) {
+  // If clicking the same photo that's already open, do nothing - otherwise this will vanish the picture
+  if (isPhotoDetailsOpen.value && selectedPhoto.value?.id === photoId) {
+    return
+  }
+
   isPhotoDetailsOpen.value = true
   try {
     const photo = await $fetch<PhotoDetail>(`/api/v1/admin/photos/${photoId}`)
