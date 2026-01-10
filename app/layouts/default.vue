@@ -24,7 +24,7 @@
             <template #default="{ user }">
               <UDropdownMenu
                 v-if="user"
-                :items="getDropdownItems(user)"
+                :items="dropdownItems"
               >
                 <UButton
                   color="neutral"
@@ -85,31 +85,39 @@ const formattedBuildTime = computed(() => {
   }
 })
 
-const roles = ref<string[] | null>(null)
 const session = useUserSession()
+const sessionUser = computed(() => session.user.value)
+const { fetchPermissions, clearPermissions, hasRole } = usePermissions()
+
+async function syncPermissions() {
+  if (!sessionUser.value) {
+    clearPermissions()
+    return
+  }
+
+  try {
+    await fetchPermissions(true)
+  } catch (error: any) {
+    const status = error?.statusCode ?? error?.response?.status
+    if (status === 401) {
+      await session.clear()
+    }
+    clearPermissions()
+  }
+}
 
 watch(
-  () => session.user,
-  async (u) => {
-    if (!u) {
-      roles.value = null
-      return
-    }
-    try {
-      const res = await $fetch("/api/v1/me/permissions")
-      roles.value = Array.isArray(res?.roles) ? res.roles : []
-    } catch {
-      roles.value = []
-    }
+  () => sessionUser.value?.id,
+  async () => {
+    await syncPermissions()
   },
   { immediate: true },
 )
 
-function getDropdownItems(_user: any) {
+const dropdownItems = computed(() => {
   const items: any[] = []
 
-  const isAdmin = !!roles.value?.includes("admin")
-  if (isAdmin) {
+  if (hasRole("admin")) {
     items.push([{ label: t("nav_admin"), to: localePath("/admin"), icon: "lucide:settings" }])
   }
 
@@ -119,13 +127,14 @@ function getDropdownItems(_user: any) {
       icon: "lucide:log-out",
       onSelect: async () => {
         await session.clear()
+        clearPermissions()
         await navigateTo(localePath("/"))
       },
     },
   ])
 
   return items
-}
+})
 
 const currentLanguageLabel = computed(() => {
   switch (locale.value) {

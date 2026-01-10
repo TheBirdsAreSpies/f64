@@ -17,6 +17,7 @@ interface PermissionsResponse {
 
 const permissionsState = ref<PermissionsResponse | null>(null)
 const isLoading = ref(false)
+const lastError = ref<unknown>(null)
 
 export function usePermissions(): any {
   async function fetchPermissions(force = false): Promise<PermissionsResponse | null> {
@@ -28,10 +29,12 @@ export function usePermissions(): any {
     try {
       const data = await $fetch<PermissionsResponse>("/api/v1/me/permissions")
       permissionsState.value = data
+      lastError.value = null
       return data
-    } catch {
+    } catch (error) {
       permissionsState.value = null
-      return null
+      lastError.value = error
+      throw error
     } finally {
       isLoading.value = false
     }
@@ -73,5 +76,6 @@ export function usePermissions(): any {
     hasAllPermissions,
     hasRole,
     clearPermissions,
+    lastError: computed(() => lastError.value),
   }
 }
