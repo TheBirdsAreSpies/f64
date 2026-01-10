@@ -1,36 +1,50 @@
 import { prisma } from "~~/lib/prisma"
 
 export default defineEventHandler(async (event) => {
-  const user = await requireAuth(event)
+  const session = await requireAuth(event)
   const photoId = getRouterParam(event, "id")
+
+  const userId = session.user?.id
 
   if (!photoId) {
     throw createError({ statusCode: 400, message: "Photo ID is required" })
   }
 
-  const existing = await prisma.like.findUnique({
-    where: {
-      photoId_userId: {
-        photoId,
-        userId: user.id,
-      },
-    },
-  })
+  if (!userId) {
+    throw createError({ statusCode: 401, message: "User ID not found" })
+  }
 
-  if (existing) {
-    await prisma.like.delete({
-      where: { id: existing.id },
-    })
-
-    return { liked: false }
-  } else {
-    await prisma.like.create({
-      data: {
-        photoId,
-        userId: user.id,
+  try {
+    const existing = await prisma.like.findUnique({
+      where: {
+        photoId_userId: {
+          photoId,
+          userId,
+        },
       },
     })
 
-    return { liked: true }
+    if (existing) {
+      await prisma.like.delete({
+        where: { id: existing.id },
+      })
+
+      return { liked: false }
+    } else {
+      await prisma.like.create({
+        data: {
+          photoId,
+          userId,
+        },
+      })
+
+      return { liked: true }
+    }
+  } catch (error: any) {
+    console.error("Like operation error:", error.message)
+    if (error.code === "P2003") {
+      throw createError({ statusCode: 400, message: "Photo or user not found" })
+    }
+    throw createError({ statusCode: 500, message: "Failed to update like" })
   }
 })
