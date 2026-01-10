@@ -122,6 +122,23 @@
             </p>
           </div>
 
+          <!-- Tags -->
+          <div v-if="selectedPhoto.tags && selectedPhoto.tags.length > 0">
+            <h4 class="font-semibold mb-3">
+              {{ t('photo_field_tags') }}
+            </h4>
+            <div class="flex flex-wrap gap-2">
+              <UBadge
+                v-for="tag in selectedPhoto.tags"
+                :key="tag.id"
+                color="primary"
+                variant="subtle"
+              >
+                {{ tag.name }}
+              </UBadge>
+            </div>
+          </div>
+
           <div v-if="hasMetadata">
             <h4 class="font-semibold mb-3">
               {{ t('photo_details_title') }}
@@ -350,7 +367,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Photo } from "~~/shared/types/photo"
+import type { Photo, PhotoDetail } from "~~/shared/types/photo"
 
 const props = withDefaults(defineProps<{
   photos: Photo[]
@@ -376,7 +393,7 @@ watch(() => props.open, (val) => {
 watch(isOpen, val => emit("update:open", val))
 
 const currentPhotoIndex = ref(0)
-const selectedPhoto = computed(() => props.photos[currentPhotoIndex.value])
+const selectedPhoto = computed(() => props.photos[currentPhotoIndex.value] as PhotoDetail)
 
 const imageLoading = ref(false)
 const showSidebar = ref(true)
