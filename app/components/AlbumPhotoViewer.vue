@@ -38,30 +38,32 @@
         class="grid h-full relative"
         :class="showSidebar ? 'grid-cols-1 lg:grid-cols-[1fr_320px] gap-6' : 'grid-cols-1'"
       >
-        <UButton
-          v-if="hasMultiplePhotos"
-          type="button"
-          icon="lucide:chevron-left"
-          color="primary"
-          variant="solid"
-          class="absolute left-4 top-1/2 -translate-y-1/2 opacity-40 hover:opacity-100 transition-opacity z-10"
-          @click="navigatePhoto('prev')"
-        />
-        <UButton
-          v-if="hasMultiplePhotos"
-          type="button"
-          icon="lucide:chevron-right"
-          color="primary"
-          variant="solid"
-          class="absolute top-1/2 -translate-y-1/2 opacity-40 hover:opacity-100 transition-opacity z-10"
-          :class="showSidebar ? 'right-4 lg:right-[356px]' : 'right-4'"
-          @click="navigatePhoto('next')"
-        />
-
-        <div class="relative flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
+        <div
+          class="relative flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden w-full"
+          :style="{ maxHeight: showSidebar ? 'calc(100vh - 12rem)' : 'calc(100vh - 8rem)' }"
+        >
+          <UButton
+            v-if="hasMultiplePhotos"
+            type="button"
+            icon="lucide:chevron-left"
+            color="primary"
+            variant="solid"
+            class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 transition-opacity z-20"
+            @click="navigatePhoto('prev')"
+          />
+          <UButton
+            v-if="hasMultiplePhotos"
+            type="button"
+            icon="lucide:chevron-right"
+            color="primary"
+            variant="solid"
+            class="absolute top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 transition-opacity z-20"
+            :class="showSidebar ? 'right-2 sm:right-4 lg:right-[356px]' : 'right-2 sm:right-4'"
+            @click="navigatePhoto('next')"
+          />
           <div
             ref="imageContainer"
-            class="max-h-full w-full flex items-center justify-center p-4 select-none relative"
+            class="w-full h-full flex items-center justify-center p-2 sm:p-4 select-none relative touch-none"
             :class="zoomLevel > 0 ? 'cursor-move' : 'cursor-zoom-in'"
             @click="handleImageClick($event)"
             @dblclick="handleDoubleClick"
@@ -70,6 +72,9 @@
             @mouseup="handleMouseUp"
             @mouseleave="handleMouseUp"
             @wheel.prevent.stop="handleWheel"
+            @touchstart="handleTouchStart"
+            @touchmove="handleTouchMove"
+            @touchend="handleTouchEnd"
           >
             <USkeleton
               v-if="imageLoading"
@@ -84,7 +89,9 @@
                   ? `scale(${(90 + zoomLevel * 10) / 100}) translate(${imagePosition.x / ((90 + zoomLevel * 10) / 100)}px, ${imagePosition.y / ((90 + zoomLevel * 10) / 100)}px)`
                   : 'scale(1)'}`,
                 maxWidth: zoomLevel > 0 ? 'none' : '100%',
-                maxHeight: zoomLevel > 0 ? 'none' : (showSidebar ? 'calc(100vh - 12rem)' : 'calc(100vh - 8rem)'),
+                maxHeight: 'none',
+                width: zoomLevel > 0 ? 'auto' : '100%',
+                height: zoomLevel > 0 ? 'auto' : '100%',
               }"
               class="rounded-lg object-contain select-none"
               :class="zoomLevel > 0 ? '' : 'transition-transform duration-300'"
@@ -99,12 +106,15 @@
             />
           </div>
 
-          <div class="absolute bottom-0 left-0 right-0 h-24 group">
+          <div class="absolute bottom-0 left-0 right-0 h-24 group pointer-events-none">
             <div
-              class="absolute left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 flex items-center gap-3 transition-all duration-300"
+              class="absolute left-1/2 -translate-x-1/2 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 flex items-center gap-3 transition-all duration-300 pointer-events-auto"
               :class="[
                 zoomLevel > 0 ? 'opacity-100 bottom-4' : 'opacity-40 group-hover:opacity-100 -bottom-12 group-hover:bottom-4',
               ]"
+              @touchstart.stop
+              @touchmove.stop
+              @touchend.stop
             >
               <UButton
                 type="button"
@@ -457,6 +467,11 @@ const submittingComment = ref(false)
 const isLiked = ref(false)
 const likeCount = ref(0)
 
+// Touch handling
+const isTouchDragging = ref(false)
+const touchStartPos = ref({ x: 0, y: 0 })
+const touchStartDistance = ref(0)
+
 const hasMetadata = computed(() => {
   const p = selectedPhoto.value
   if (!p)
@@ -653,6 +668,90 @@ function handleMouseMove(e: MouseEvent) {
 
 function handleMouseUp() {
   isDragging.value = false
+}
+
+function handleTouchStart(e: TouchEvent) {
+  if (e.touches.length === 1 && e.touches[0]) {
+    // Single touch - for panning when zoomed
+    if (zoomLevel.value > 0) {
+      isTouchDragging.value = true
+      touchStartPos.value = {
+        x: e.touches[0]!.clientX,
+        y: e.touches[0]!.clientY,
+      }
+    }
+  } else if (e.touches.length === 2 && e.touches[0] && e.touches[1]) {
+    // Two-finger touch - for pinch zoom
+    const touch1 = e.touches[0]!
+    const touch2 = e.touches[1]!
+    const distance = Math.hypot(
+      touch1.clientX - touch2.clientX,
+      touch1.clientY - touch2.clientY,
+    )
+    touchStartDistance.value = distance
+    isTouchDragging.value = false
+  }
+}
+
+function handleTouchMove(e: TouchEvent) {
+  if (e.touches.length === 1 && e.touches[0] && isTouchDragging.value && zoomLevel.value > 0) {
+    // Single touch panning
+    e.preventDefault()
+
+    let deltaX = e.touches[0]!.clientX - touchStartPos.value.x
+    let deltaY = e.touches[0]!.clientY - touchStartPos.value.y
+
+    // Account for image rotation in coordinate system
+    const rotation = selectedPhoto.value?.rotation || 0
+    if (rotation === 90 || rotation === -270) {
+      [deltaX, deltaY] = [deltaY, -deltaX]
+    } else if (rotation === 180 || rotation === -180) {
+      [deltaX, deltaY] = [-deltaX, -deltaY]
+    } else if (rotation === 270 || rotation === -90) {
+      [deltaX, deltaY] = [-deltaY, deltaX]
+    }
+
+    imagePosition.value = {
+      x: imagePosition.value.x + deltaX,
+      y: imagePosition.value.y + deltaY,
+    }
+
+    touchStartPos.value = {
+      x: e.touches[0]!.clientX,
+      y: e.touches[0]!.clientY,
+    }
+  } else if (e.touches.length === 2 && e.touches[0] && e.touches[1]) {
+    // Two-finger pinch zoom
+    e.preventDefault()
+
+    const touch1 = e.touches[0]!
+    const touch2 = e.touches[1]!
+    const distance = Math.hypot(
+      touch1.clientX - touch2.clientX,
+      touch1.clientY - touch2.clientY,
+    )
+
+    if (touchStartDistance.value > 0) {
+      const scale = distance / touchStartDistance.value
+      const zoomDelta = scale > 1 ? 1 : -1
+      const newZoom = Math.min(31, Math.max(0, zoomLevel.value + zoomDelta))
+
+      if (newZoom !== zoomLevel.value) {
+        zoomLevel.value = newZoom
+        touchStartDistance.value = distance
+        clampAfterUpdate()
+      }
+    }
+  }
+}
+
+function handleTouchEnd(e: TouchEvent) {
+  isTouchDragging.value = false
+  touchStartDistance.value = 0
+
+  if (e.touches.length === 0) {
+    clampAfterUpdate()
+  }
 }
 
 function handleZoomIn() {
