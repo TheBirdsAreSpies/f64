@@ -32,7 +32,7 @@
         <div class="relative flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
           <div
             ref="imageContainer"
-            class="max-h-full w-full flex items-center justify-center p-4"
+            class="max-h-full w-full flex items-center justify-center p-4 select-none"
             :class="zoomLevel > 0 ? 'cursor-move' : 'cursor-zoom-in'"
             @click="handleImageClick($event)"
             @dblclick="handleDoubleClick"
@@ -528,9 +528,10 @@ function handleMouseDown(e: MouseEvent) {
   if (zoomLevel.value <= 0)
     return
   isDragging.value = true
+  e.preventDefault()
   dragStart.value = {
-    x: e.clientX - imagePosition.value.x,
-    y: e.clientY - imagePosition.value.y,
+    x: e.clientX,
+    y: e.clientY,
   }
 }
 
@@ -539,10 +540,28 @@ function handleMouseMove(e: MouseEvent) {
     return
   e.preventDefault()
 
-  const newX = e.clientX - dragStart.value.x
-  const newY = e.clientY - dragStart.value.y
+  let deltaX = e.clientX - dragStart.value.x
+  let deltaY = e.clientY - dragStart.value.y
 
-  imagePosition.value = { x: newX, y: newY }
+  // Account for image rotation in coordinate system
+  const rotation = selectedPhoto.value?.rotation || 0
+  if (rotation === 90 || rotation === -270) {
+    [deltaX, deltaY] = [deltaY, -deltaX]
+  } else if (rotation === 180 || rotation === -180) {
+    [deltaX, deltaY] = [-deltaX, -deltaY]
+  } else if (rotation === 270 || rotation === -90) {
+    [deltaX, deltaY] = [-deltaY, deltaX]
+  }
+
+  imagePosition.value = {
+    x: imagePosition.value.x + deltaX,
+    y: imagePosition.value.y + deltaY,
+  }
+
+  dragStart.value = {
+    x: e.clientX,
+    y: e.clientY,
+  }
 }
 
 function handleMouseUp() {
