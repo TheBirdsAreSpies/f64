@@ -39,7 +39,7 @@ definePageMeta({
 
 const { t } = useI18n()
 const localePath = useLocalePath()
-// const toast = useToast()
+const toast = useToast()
 
 const standardLoginSchema = computed(() =>
   createStandardLoginSchema(t),
@@ -72,6 +72,11 @@ async function onSubmitStandard(payload: FormSubmitEvent<any>) {
   })
   if (!result) {
     console.error("Login failed")
+    toast.add({
+      title: t("login_failed"),
+      description: t("login_invalid_credentials"),
+      color: "error",
+    })
     return
   }
 

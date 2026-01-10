@@ -9,6 +9,8 @@
   "login_validation_invalid_email": "Bitte gib eine gültige E-Mail-Adresse ein.",
   "login_validation_required": "{field} ist erforderlich.",
   "login_validation_min_length": "Mindestens {count} Zeichen erforderlich.",
+  "login_failed": "Anmeldung fehlgeschlagen",
+  "login_invalid_credentials": "Ungültige E-Mail oder Passwort. Bitte versuche es erneut.",
   "upload_title": "Fotos hochladen",
   "upload_description": "Füge neue Fotos zu deiner Galerie hinzu",
   "upload_select_photos": "Fotos auswählen",

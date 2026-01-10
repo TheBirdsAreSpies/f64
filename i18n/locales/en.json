@@ -9,6 +9,8 @@
   "login_validation_invalid_email": "Please enter a valid email address.",
   "login_validation_required": "{field} is required.",
   "login_validation_min_length": "At least {count} characters required.",
+  "login_failed": "Login Failed",
+  "login_invalid_credentials": "Invalid email or password. Please try again.",
   "upload_title": "Upload Photos",
   "upload_description": "Add new photos to your gallery",
   "upload_select_photos": "Select Photos",
