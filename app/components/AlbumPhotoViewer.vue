@@ -321,7 +321,7 @@
                   </UTooltip>
                 </div>
                 <div class="bg-gray-100 dark:bg-gray-800 rounded-2xl rounded-tl-sm px-4 py-2.5 inline-block max-w-[85%]">
-                  <p class="text-sm text-gray-900 dark:text-gray-100">
+                  <p class="text-sm text-gray-900 dark:text-gray-100 wrap-break-word">
                     {{ comment.content }}
                   </p>
                 </div>
