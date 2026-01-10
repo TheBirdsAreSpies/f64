@@ -12,7 +12,7 @@
         :class="showSidebar ? 'grid-cols-1 lg:grid-cols-[1fr_320px] gap-6' : 'grid-cols-1'"
       >
         <UButton
-          v-if="props.photos.length > 1"
+          v-if="hasMultiplePhotos"
           type="button"
           icon="lucide:chevron-left"
           color="primary"
@@ -21,7 +21,7 @@
           @click="navigatePhoto('prev')"
         />
         <UButton
-          v-if="props.photos.length > 1"
+          v-if="hasMultiplePhotos"
           type="button"
           icon="lucide:chevron-right"
           color="primary"
@@ -413,6 +413,7 @@ watch(isOpen, val => emit("update:open", val))
 
 const currentPhotoIndex = ref(0)
 const selectedPhoto = computed(() => props.photos[currentPhotoIndex.value] as PhotoDetail)
+const hasMultiplePhotos = computed(() => props.photos.length > 1)
 
 const imageLoading = ref(false)
 const showSidebar = ref(true)
@@ -488,13 +489,22 @@ function handleKeydown(e: KeyboardEvent) {
     return
 
   if (e.key === "ArrowLeft") {
-    e.preventDefault()
-    navigatePhoto("prev")
+    if (hasMultiplePhotos.value) {
+      e.preventDefault()
+      navigatePhoto("prev")
+    }
   } else if (e.key === "ArrowRight") {
-    e.preventDefault()
-    navigatePhoto("next")
+    if (hasMultiplePhotos.value) {
+      e.preventDefault()
+      navigatePhoto("next")
+    }
   } else if (e.key === "Escape") {
-    isOpen.value = false
+    if (hasMultiplePhotos.value) {
+      isOpen.value = false
+    } else {
+      e.preventDefault()
+      e.stopPropagation()
+    }
   } else if (e.key === "+" || e.key === "=") {
     e.preventDefault()
     handleZoomIn()
