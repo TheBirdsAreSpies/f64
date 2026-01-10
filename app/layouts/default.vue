@@ -1,14 +1,11 @@
 <template>
   <div class="flex flex-col min-h-screen">
-    <UHeader>
+    <UHeader :to="localePath('/')">
       <template #title>
-        <NuxtLink
-          :to="localePath('/')"
-          class="flex items-center gap-3"
-        >
+        <div class="flex items-center gap-3">
           <AppLogo />
           <span class="text-2xl font-bold">ƒ/64</span>
-        </NuxtLink>
+        </div>
       </template>
 
       <template #right>
