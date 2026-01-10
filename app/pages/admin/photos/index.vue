@@ -258,7 +258,7 @@
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <h3 class="font-semibold">
-                {{ $t('metadata_title') }}
+                {{ t('metadata_title') }}
               </h3>
               <UButton
                 v-if="selectedPhoto.cameraMake || selectedPhoto.cameraModel || selectedPhoto.fNumber || selectedPhoto.exposureTime || selectedPhoto.iso || selectedPhoto.focalLength || selectedPhoto.lensModel"
@@ -268,7 +268,7 @@
                 icon="lucide:x"
                 @click="removeMetadata"
               >
-                {{ $t('metadata_remove_all') }}
+                {{ t('metadata_remove_all') }}
               </UButton>
             </div>
             <div
@@ -276,7 +276,7 @@
               class="grid grid-cols-2 gap-2 text-sm"
             >
               <div class="text-gray-500">
-                {{ $t('metadata_taken_date') }}
+                {{ t('metadata_taken_date') }}
               </div>
               <div>{{ formatDate(selectedPhoto.takenAt) }}</div>
             </div>
@@ -285,7 +285,7 @@
               class="grid grid-cols-2 gap-2 text-sm"
             >
               <div class="text-gray-500">
-                {{ $t('metadata_camera') }}
+                {{ t('metadata_camera') }}
               </div>
               <div>{{ selectedPhoto.cameraMake }} {{ selectedPhoto.cameraModel }}</div>
             </div>
@@ -294,7 +294,7 @@
               class="grid grid-cols-2 gap-2 text-sm"
             >
               <div class="text-gray-500">
-                {{ $t('metadata_aperture') }}
+                {{ t('metadata_aperture') }}
               </div>
               <div>ƒ/{{ selectedPhoto.fNumber }}</div>
             </div>
@@ -303,7 +303,7 @@
               class="grid grid-cols-2 gap-2 text-sm"
             >
               <div class="text-gray-500">
-                {{ $t('metadata_shutter_speed') }}
+                {{ t('metadata_shutter_speed') }}
               </div>
               <div>{{ formatShutterSpeed(selectedPhoto.exposureTime) }}s</div>
             </div>
@@ -312,7 +312,7 @@
               class="grid grid-cols-2 gap-2 text-sm"
             >
               <div class="text-gray-500">
-                {{ $t('metadata_iso') }}
+                {{ t('metadata_iso') }}
               </div>
               <div>{{ selectedPhoto.iso }}</div>
             </div>
@@ -321,7 +321,7 @@
               class="grid grid-cols-2 gap-2 text-sm"
             >
               <div class="text-gray-500">
-                {{ $t('metadata_focal_length') }}
+                {{ t('metadata_focal_length') }}
               </div>
               <div>{{ selectedPhoto.focalLength }}mm</div>
             </div>
@@ -330,19 +330,19 @@
               class="grid grid-cols-2 gap-2 text-sm"
             >
               <div class="text-gray-500">
-                {{ $t('metadata_lens') }}
+                {{ t('metadata_lens') }}
               </div>
               <div>{{ selectedPhoto.lensModel }}</div>
             </div>
             <div class="grid grid-cols-2 gap-2 text-sm">
               <div class="text-gray-500">
-                {{ $t('metadata_dimensions') }}
+                {{ t('metadata_dimensions') }}
               </div>
               <div>{{ selectedPhoto.width }} × {{ selectedPhoto.height }}</div>
             </div>
             <div class="grid grid-cols-2 gap-2 text-sm">
               <div class="text-gray-500">
-                {{ $t('metadata_file_size') }}
+                {{ t('metadata_file_size') }}
               </div>
               <div>{{ formatFileSize(selectedPhoto.fileSize) }}</div>
             </div>
