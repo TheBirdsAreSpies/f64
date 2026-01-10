@@ -1,10 +1,28 @@
 <template>
   <UModal
     v-model:open="isOpen"
-    :title="selectedPhoto?.title"
     :close="showCloseButton"
     fullscreen
   >
+    <template #header>
+      <div class="flex items-center w-full gap-2">
+        <h3 class="text-lg font-semibold truncate flex-1">
+          {{ selectedPhoto?.title }}
+        </h3>
+        <div class="ml-auto flex items-center">
+          <UButton
+            v-if="!hasMultiplePhotos"
+            :to="localePath('/')"
+            icon="lucide:home"
+            color="primary"
+            variant="ghost"
+            size="sm"
+          >
+            {{ t('nav_back_to_gallery') }}
+          </UButton>
+        </div>
+      </div>
+    </template>
     <template #body>
       <div
         v-if="selectedPhoto"

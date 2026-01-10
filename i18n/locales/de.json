@@ -170,6 +170,7 @@
   "gallery_photos": "Fotos",
   "gallery_tags": "Tags",
   "gallery_empty": "Keine Alben gefunden",
+  "nav_back_to_gallery": "Zur Galerie",
   "footer_copyright": "© 2024-2025 ƒ/64 — Crafted with ❤️",
   "footer_version": "v{version}",
   "footer_built": "Built: {time}"
