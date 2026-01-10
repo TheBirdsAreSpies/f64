@@ -14,6 +14,7 @@ export default defineEventHandler(async (event) => {
       id: true,
       title: true,
       thumbnailPath: true,
+      rotation: true,
       uploadedAt: true,
     },
   })

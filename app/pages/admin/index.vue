@@ -199,6 +199,7 @@
                   :src="photo.thumbnailPath"
                   :alt="photo.title"
                   class="w-full h-full object-cover"
+                  :style="photo.rotation ? { transform: `rotate(${photo.rotation}deg)` } : undefined"
                   loading="lazy"
                 />
               </div>
@@ -251,6 +252,7 @@
 </template>
 
 <script setup lang="ts">
+// show most liked photos
 definePageMeta({
   layout: "admin",
   middleware: ["admin"],
