@@ -154,7 +154,8 @@
       <template #body>
         <div
           v-if="selectedPhoto"
-          class="space-y-6"
+          ref="slideoverBodyRef"
+          class="space-y-6 max-h-[calc(100vh-10rem)] overflow-y-auto pr-2"
         >
           <!-- Photo Preview -->
           <div class="relative aspect-video rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
@@ -424,6 +425,7 @@ const selectedPhoto = ref<PhotoDetail | null>(null)
 const saving = ref(false)
 const tagInput = ref("")
 const photoRotation = ref(0)
+const slideoverBodyRef = ref<HTMLElement | null>(null)
 
 // Delete confirmation dialog
 const showDeleteConfirm = ref(false)
@@ -464,6 +466,9 @@ async function openPhotoDetails(photoId: string) {
     photoForm.albumIds = photo.albums?.map((a: any) => a.id) || []
     photoRotation.value = photo.rotation || 0
     isPhotoDetailsOpen.value = true
+
+    await nextTick()
+    slideoverBodyRef.value?.scrollTo({ top: 0, behavior: "smooth" })
   } catch (error) {
     console.error("Failed to load photo details:", error)
   }
