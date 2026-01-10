@@ -9,9 +9,18 @@
         <h3 class="text-lg font-semibold truncate flex-1">
           {{ selectedPhoto?.title }}
         </h3>
-        <div class="ml-auto flex items-center">
+        <div class="ml-auto flex items-center gap-2">
           <UButton
-            v-if="!hasMultiplePhotos"
+            v-if="hasMultiplePhotos && showCloseButton"
+            icon="lucide:x"
+            color="neutral"
+            variant="ghost"
+            size="sm"
+            aria-label="Close"
+            @click="isOpen = false"
+          />
+          <UButton
+            v-else
             :to="localePath('/')"
             icon="lucide:home"
             color="primary"
