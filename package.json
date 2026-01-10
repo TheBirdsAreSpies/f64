@@ -41,6 +41,7 @@
   "devDependencies": {
     "@nuxt/eslint": "^1.12.1",
     "@types/node": "^25.0.2",
+    "baseline-browser-mapping": "^2.9.14",
     "eslint": "^9.39.2",
     "prisma": "^7.1.0",
     "tsx": "^4.21.0",
