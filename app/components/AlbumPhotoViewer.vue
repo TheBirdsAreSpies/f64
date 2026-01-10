@@ -12,6 +12,7 @@
         :class="showSidebar ? 'grid-cols-1 lg:grid-cols-[1fr_320px] gap-6' : 'grid-cols-1'"
       >
         <UButton
+          v-if="props.photos.length > 1"
           type="button"
           icon="lucide:chevron-left"
           color="primary"
@@ -20,6 +21,7 @@
           @click="navigatePhoto('prev')"
         />
         <UButton
+          v-if="props.photos.length > 1"
           type="button"
           icon="lucide:chevron-right"
           color="primary"
