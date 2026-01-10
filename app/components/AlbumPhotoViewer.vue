@@ -228,6 +228,60 @@
             </UButton>
           </div>
 
+          <!-- Social Share Buttons -->
+          <div>
+            <h4 class="font-semibold mb-3">
+              {{ t('share_title') }}
+            </h4>
+            <div class="flex flex-wrap gap-2">
+              <UTooltip :text="t('share_twitter')">
+                <UButton
+                  icon="lucide:twitter"
+                  color="primary"
+                  size="sm"
+                  :aria-label="t('share_twitter')"
+                  @click="shareOnTwitter"
+                />
+              </UTooltip>
+              <UTooltip :text="t('share_facebook')">
+                <UButton
+                  icon="lucide:facebook"
+                  color="primary"
+                  size="sm"
+                  :aria-label="t('share_facebook')"
+                  @click="shareOnFacebook"
+                />
+              </UTooltip>
+              <UTooltip :text="t('share_linkedin')">
+                <UButton
+                  icon="lucide:linkedin"
+                  color="primary"
+                  size="sm"
+                  :aria-label="t('share_linkedin')"
+                  @click="shareOnLinkedIn"
+                />
+              </UTooltip>
+              <UTooltip :text="t('share_email')">
+                <UButton
+                  icon="lucide:mail"
+                  color="primary"
+                  size="sm"
+                  :aria-label="t('share_email')"
+                  @click="shareViaEmail"
+                />
+              </UTooltip>
+              <UTooltip :text="t('share_copy_link')">
+                <UButton
+                  icon="lucide:link"
+                  color="primary"
+                  size="sm"
+                  :aria-label="t('share_copy_link')"
+                  @click="copyLink"
+                />
+              </UTooltip>
+            </div>
+          </div>
+
           <div>
             <h4 class="font-semibold mb-4">
               {{ t('comments_title') }}
@@ -536,18 +590,62 @@ async function addComment() {
   submittingComment.value = true
 
   try {
-    await $fetch("/api/v1/comments", {
-      method: "POST",
-      body: {
-        content: newComment.value,
-        photoId: selectedPhoto.value.id,
-      },
+    const comment = await $fetch(`/api/v1/photos/${selectedPhoto.value.id}/comments`, {
+      method: "POST" as any,
+      body: { content: newComment.value },
     })
 
+    comments.value.push(comment)
     newComment.value = ""
-    await loadComments(selectedPhoto.value.id)
+  } catch (error) {
+    console.error("Failed to add comment:", error)
   } finally {
     submittingComment.value = false
+  }
+}
+
+// Social share functions
+function getPhotoUrl() {
+  if (!selectedPhoto.value)
+    return ""
+  const baseUrl = window.location.origin
+  return `${baseUrl}${localePath(`/photos/${selectedPhoto.value.id}`)}`
+}
+
+function shareOnTwitter() {
+  const url = getPhotoUrl()
+  const text = selectedPhoto.value?.title || "Check out this photo"
+  window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent(text)}`, "_blank")
+}
+
+function shareOnFacebook() {
+  const url = getPhotoUrl()
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, "_blank")
+}
+
+function shareOnLinkedIn() {
+  const url = getPhotoUrl()
+  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, "_blank")
+}
+
+function shareViaEmail() {
+  const url = getPhotoUrl()
+  const subject = selectedPhoto.value?.title || "Check out this photo"
+  const body = `I thought you might like this photo: ${url}`
+  window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+}
+
+async function copyLink() {
+  const url = getPhotoUrl()
+  try {
+    await navigator.clipboard.writeText(url)
+    const toast = useToast()
+    toast.add({
+      title: t("share_link_copied"),
+      color: "success",
+    })
+  } catch (error) {
+    console.error("Failed to copy link:", error)
   }
 }
 
