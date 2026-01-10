@@ -155,7 +155,7 @@
             :icon="showSidebar ? 'lucide:panel-right-close' : 'lucide:panel-right-open'"
             color="primary"
             variant="solid"
-            class="absolute top-4 left-4 sm:left-auto sm:right-4 z-20"
+            class="absolute top-4 right-4 z-20"
             @click="showSidebar = !showSidebar"
           />
         </div>
