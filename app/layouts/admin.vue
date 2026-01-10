@@ -302,14 +302,7 @@
 
       <!-- Bottom Actions -->
       <div class="p-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
-        <ULocaleSelect
-          :model-value="locale"
-          :locales="availableLocales"
-          color="neutral"
-          variant="ghost"
-          class="w-full"
-          @update:model-value="(val) => setLocale(val as 'en' | 'de')"
-        />
+        <LanguageSelector />
 
         <UButton
           :to="localePath('/')"
@@ -357,7 +350,6 @@
 </template>
 
 <script setup lang="ts">
-import { de, en } from "@nuxt/ui/locale"
 import { useAlbumsStore } from "~/stores/albums"
 
 interface Tag {
@@ -392,11 +384,9 @@ await albumsStore.fetchAlbums(10)
 const { data: tags } = await useFetch<TagsResponse>("/api/v1/tags", { query: { limit: 15 } })
 const { data: years } = await useFetch<YearStat[]>("/api/v1/admin/photos/years")
 
-const { t, locale, setLocale } = useI18n()
+const { t } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()
-
-const availableLocales = [en, de]
 
 function isActive(path: string) {
   const currentPath = route.path.replace(/^\/(en|de)/, "") // Remove locale prefix

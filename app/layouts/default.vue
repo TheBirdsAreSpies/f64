@@ -10,15 +10,7 @@
 
       <template #right>
         <div class="flex items-center gap-2">
-          <UDropdownMenu :items="languageMenuItems">
-            <UButton
-              color="neutral"
-              variant="ghost"
-              :label="currentLanguageLabel"
-              :leading-icon="currentLanguageIcon"
-              trailing-icon="lucide:chevron-down"
-            />
-          </UDropdownMenu>
+          <LanguageSelector />
 
           <AuthState>
             <template #default="{ user }">
@@ -73,7 +65,7 @@
 
 <script setup lang="ts">
 const localePath = useLocalePath()
-const { t, d, locale, setLocale } = useI18n()
+const { t, d } = useI18n()
 
 const appVersion = import.meta.env.APP_VERSION || "v1.0.0"
 const buildTimeISO = import.meta.env.BUILD_TIME || new Date().toISOString()
@@ -134,30 +126,5 @@ const dropdownItems = computed(() => {
   ])
 
   return items
-})
-
-const currentLanguageLabel = computed(() => {
-  switch (locale.value) {
-    case "de":
-      return t("lang_german")
-    default:
-      return t("lang_english")
-  }
-})
-
-const languageMenuItems = computed(() => [
-  [
-    { label: t("lang_english"), icon: "circle-flags:gb", onSelect: () => setLocale("en") },
-    { label: t("lang_german"), icon: "circle-flags:de", onSelect: () => setLocale("de") },
-  ],
-])
-
-const currentLanguageIcon = computed(() => {
-  switch (locale.value) {
-    case "de":
-      return "circle-flags:de"
-    default:
-      return "circle-flags:gb"
-  }
 })
 </script>
