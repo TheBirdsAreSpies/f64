@@ -32,7 +32,7 @@
         <div class="relative flex items-center justify-center bg-gray-50 dark:bg-gray-900 rounded-lg overflow-hidden">
           <div
             ref="imageContainer"
-            class="max-h-full w-full flex items-center justify-center p-4 select-none"
+            class="max-h-full w-full flex items-center justify-center p-4 select-none relative"
             :class="zoomLevel > 0 ? 'cursor-move' : 'cursor-zoom-in'"
             @click="handleImageClick($event)"
             @dblclick="handleDoubleClick"
@@ -61,6 +61,11 @@
               draggable="false"
               @load="imageLoading = false"
               @error="imageLoading = false"
+            />
+            <!-- Transparent overlay to prevent image-specific context menu -->
+            <div
+              class="absolute inset-0"
+              style="pointer-events: auto;"
             />
           </div>
 
