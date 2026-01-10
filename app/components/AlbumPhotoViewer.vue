@@ -568,8 +568,11 @@ function handleImageClick(e: MouseEvent) {
       if (zoomedWidth < containerRect.width && zoomedHeight < containerRect.height) {
         imagePosition.value = { x: 0, y: 0 }
       } else {
-        const clickOnImageX = e.clientX - imgRect.left
-        const clickOnImageY = e.clientY - imgRect.top
+        // Clamp click coordinates to image bounds to avoid extreme offsets
+        let clickOnImageX = e.clientX - imgRect.left
+        let clickOnImageY = e.clientY - imgRect.top
+        clickOnImageX = Math.max(0, Math.min(imgRect.width, clickOnImageX))
+        clickOnImageY = Math.max(0, Math.min(imgRect.height, clickOnImageY))
 
         const clickFromCenterX = clickOnImageX - imgRect.width / 2
         const clickFromCenterY = clickOnImageY - imgRect.height / 2
@@ -578,8 +581,18 @@ function handleImageClick(e: MouseEvent) {
         const targetScale = 1.0
         const scaleRatio = targetScale / fitScale
 
-        const posX = -clickFromCenterX * scaleRatio
-        const posY = -clickFromCenterY * scaleRatio
+        let posX = -clickFromCenterX * scaleRatio
+        let posY = -clickFromCenterY * scaleRatio
+
+        // Respect image rotation: adjust translation axes accordingly
+        const rotation = selectedPhoto.value?.rotation || 0
+        if (rotation === 90 || rotation === -270) {
+          [posX, posY] = [posY, -posX]
+        } else if (rotation === 180 || rotation === -180) {
+          [posX, posY] = [-posX, -posY]
+        } else if (rotation === 270 || rotation === -90) {
+          [posX, posY] = [-posY, posX]
+        }
 
         imagePosition.value = { x: posX, y: posY }
       }
