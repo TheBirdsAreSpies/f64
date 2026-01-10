@@ -63,15 +63,16 @@ const StandardLoginFields: AuthFormField[] = [
 ]
 
 async function onSubmitStandard(payload: FormSubmitEvent<any>) {
-  const result = await $fetch("/api/v1/auth/login", {
-    method: "POST",
-    body: JSON.stringify({
-      email: payload.data.email,
-      password: payload.data.password,
-    }),
-  })
-  if (!result) {
-    console.error("Login failed")
+  try {
+    await $fetch("/api/v1/auth/login", {
+      method: "POST",
+      body: JSON.stringify({
+        email: payload.data.email,
+        password: payload.data.password,
+      }),
+    })
+  } catch (error) {
+    console.error("Login error:", error)
     toast.add({
       title: t("login_failed"),
       description: t("login_invalid_credentials"),
