@@ -49,7 +49,9 @@
             color="primary"
             variant="solid"
             class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 transition-opacity z-20"
-            @click="navigatePhoto('prev')"
+            @click.stop="navigatePhoto('prev')"
+            @touchstart.stop
+            @touchmove.stop
           />
           <UButton
             v-if="hasMultiplePhotos"
@@ -57,9 +59,10 @@
             icon="lucide:chevron-right"
             color="primary"
             variant="solid"
-            class="absolute top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 transition-opacity z-20"
-            :class="showSidebar ? 'right-2 sm:right-4 lg:right-[356px]' : 'right-2 sm:right-4'"
-            @click="navigatePhoto('next')"
+            class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100 transition-opacity z-20"
+            @click.stop="navigatePhoto('next')"
+            @touchstart.stop
+            @touchmove.stop
           />
           <div
             ref="imageContainer"
@@ -152,7 +155,7 @@
             :icon="showSidebar ? 'lucide:panel-right-close' : 'lucide:panel-right-open'"
             color="primary"
             variant="solid"
-            class="absolute top-4 right-4"
+            class="absolute top-4 left-4 sm:left-auto sm:right-4 z-20"
             @click="showSidebar = !showSidebar"
           />
         </div>
