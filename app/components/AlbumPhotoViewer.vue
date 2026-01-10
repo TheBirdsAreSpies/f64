@@ -69,6 +69,7 @@
             @mousemove="handleMouseMove"
             @mouseup="handleMouseUp"
             @mouseleave="handleMouseUp"
+            @wheel.prevent.stop="handleWheel"
           >
             <USkeleton
               v-if="imageLoading"
@@ -668,6 +669,90 @@ function handleZoomOut() {
 function handleZoomChange() {
   if (zoomLevel.value === 0 || zoomLevel.value === 1) {
     imagePosition.value = { x: 0, y: 0 }
+  }
+}
+
+function handleWheel(e: WheelEvent) {
+  if (!selectedPhoto.value)
+    return
+
+  const container = imageContainer.value
+  const img = container?.querySelector("img") as HTMLImageElement | null
+  if (!container || !img)
+    return
+
+  // Current and next scale
+  const s = zoomLevel.value > 0 ? (90 + zoomLevel.value * 10) / 100 : 1
+  const step = e.ctrlKey ? 3 : (e.shiftKey ? 1 : 2) // Ctrl=fast, Shift=slow, default=medium
+  const direction = e.deltaY < 0 ? step : -step
+  const nextZoom = Math.min(31, Math.max(0, zoomLevel.value + direction))
+  const s2 = nextZoom > 0 ? (90 + nextZoom * 10) / 100 : 1
+
+  if (s2 === s)
+    return
+
+  // Cursor relative to image center (clamped to image bounds)
+  const imgRect = img.getBoundingClientRect()
+  let cx = e.clientX - imgRect.left
+  let cy = e.clientY - imgRect.top
+  cx = Math.max(0, Math.min(imgRect.width, cx))
+  cy = Math.max(0, Math.min(imgRect.height, cy))
+
+  const fromCenterX = cx - imgRect.width / 2
+  const fromCenterY = cy - imgRect.height / 2
+
+  // Adjust translation so the point under cursor stays roughly stable
+  const factor = (s2 / s) - 1
+  let dx = -fromCenterX * factor
+  let dy = -fromCenterY * factor
+
+  // Respect rotation
+  const rotation = selectedPhoto.value?.rotation || 0
+  if (rotation === 90 || rotation === -270) {
+    [dx, dy] = [dy, -dx]
+  } else if (rotation === 180 || rotation === -180) {
+    [dx, dy] = [-dx, -dy]
+  } else if (rotation === 270 || rotation === -90) {
+    [dx, dy] = [-dy, dx]
+  }
+
+  imagePosition.value = {
+    x: imagePosition.value.x + dx,
+    y: imagePosition.value.y + dy,
+  }
+
+  zoomLevel.value = nextZoom
+
+  // Clamp inside container
+  clampAfterUpdate()
+}
+
+function clampAfterUpdate() {
+  const container = imageContainer.value
+  const img = container?.querySelector("img") as HTMLImageElement | null
+  if (!container || !img)
+    return
+
+  const rotation = selectedPhoto.value?.rotation || 0
+  const naturalWidth = img.naturalWidth
+  const naturalHeight = img.naturalHeight
+
+  const rotated = (rotation === 90 || rotation === -270 || rotation === 270 || rotation === -90)
+  const baseWidth = rotated ? naturalHeight : naturalWidth
+  const baseHeight = rotated ? naturalWidth : naturalHeight
+
+  const containerRect = container.getBoundingClientRect()
+  const s = zoomLevel.value > 0 ? (90 + zoomLevel.value * 10) / 100 : 1
+
+  const scaledWidth = baseWidth * s
+  const scaledHeight = baseHeight * s
+
+  const maxOffsetX = Math.max(0, (scaledWidth - containerRect.width) / 2)
+  const maxOffsetY = Math.max(0, (scaledHeight - containerRect.height) / 2)
+
+  imagePosition.value = {
+    x: Math.max(-maxOffsetX, Math.min(maxOffsetX, imagePosition.value.x)),
+    y: Math.max(-maxOffsetY, Math.min(maxOffsetY, imagePosition.value.y)),
   }
 }
 
