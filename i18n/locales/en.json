@@ -135,6 +135,7 @@
   "photos_upload": "Upload Photos",
   "photos_filter_all": "All Photos",
   "photos_filter_my_photos": "My Photos",
+  "photos_filter_no_album": "Not in Albums",
   "photos_empty_title": "No photos yet",
   "photos_empty_description": "Start by uploading your first photos to the gallery",
   "album_password_title": "Password Protected Album",

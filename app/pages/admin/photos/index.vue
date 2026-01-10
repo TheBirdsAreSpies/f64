@@ -60,6 +60,13 @@
         :label="t('nav_private')"
         @click="setFilter('private')"
       />
+      <UButton
+        :variant="filter === 'no-album' ? 'solid' : 'outline'"
+        :color="filter === 'no-album' ? 'primary' : 'neutral'"
+        icon="lucide:folder-x"
+        :label="t('photos_filter_no_album')"
+        @click="setFilter('no-album')"
+      />
     </div>
 
     <!-- Photos Grid -->

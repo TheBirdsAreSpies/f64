@@ -22,6 +22,12 @@ export default defineEventHandler(async (event) => {
     where.isFeatured = true
   } else if (filter === "private") {
     where.visibility = "private"
+  } else if (filter === "unlisted") {
+    where.visibility = "unlisted"
+  } else if (filter === "no-album") {
+    where.albums = {
+      none: {},
+    }
   } else if (filter === "last-import") {
     // Get photos from the last import session (last 24 hours by default)
     const yesterday = new Date()
