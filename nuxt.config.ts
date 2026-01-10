@@ -20,6 +20,9 @@ export default defineNuxtConfig({
   devServer: {
     host: "0.0.0.0",
   },
+  image: {
+    provider: "ipx",
+  },
   runtimeConfig: {
     public: {
       baseURL: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
@@ -34,6 +37,12 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
   compatibilityDate: "2025-01-15",
   nitro: {
+    publicAssets: [
+      {
+        dir: "/app/public",
+        maxAge: 60 * 60 * 24 * 7,
+      },
+    ],
     prerender: {
       crawlLinks: false,
       routes: [],
@@ -49,9 +58,6 @@ export default defineNuxtConfig({
       code: "en",
       name: "English",
       file: "en.json",
-    }, {
-      code: "fr",
-      name: "Français",
     }],
   },
 })
