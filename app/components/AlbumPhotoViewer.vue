@@ -235,7 +235,10 @@
             </div>
           </div>
 
-          <div class="flex gap-3">
+          <div
+            v-if="session.loggedIn.value"
+            class="flex gap-3"
+          >
             <UButton
               icon="lucide:heart"
               :color="isLiked ? 'primary' : 'neutral'"
@@ -336,7 +339,7 @@
             </div>
 
             <UForm
-              v-if="session?.user"
+              v-if="session.loggedIn.value"
               :state="{ comment: newComment }"
               @submit="addComment"
             >
