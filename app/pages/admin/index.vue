@@ -186,7 +186,24 @@
         </div>
         <div class="p-6">
           <div
-            v-if="recentPhotos?.length"
+            v-if="recentPhotosPending"
+            class="space-y-4"
+          >
+            <div
+              v-for="i in 5"
+              :key="i"
+              class="flex items-center gap-4 p-3 rounded-lg"
+            >
+              <USkeleton class="w-16 h-16 rounded-lg" />
+              <div class="flex-1 space-y-2">
+                <USkeleton class="h-4 w-32" />
+                <USkeleton class="h-3 w-24" />
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-else-if="recentPhotos?.length"
             class="space-y-4"
           >
             <div
@@ -213,6 +230,7 @@
               </div>
             </div>
           </div>
+
           <div
             v-else
             class="text-center py-12"
@@ -262,7 +280,7 @@ const { t, d } = useI18n()
 const localePath = useLocalePath()
 
 const { data: stats } = await useFetch("/api/v1/admin/stats")
-const { data: recentPhotos } = await useFetch("/api/v1/admin/photos/recent")
+const { data: recentPhotos, pending: recentPhotosPending } = await useFetch("/api/v1/admin/photos/recent")
 
 function formatDate(date: string) {
   return d(new Date(date), {

@@ -165,7 +165,15 @@
               :alt="selectedPhoto.title"
               class="w-full h-full object-contain"
               :style="{ transform: `rotate(${photoRotation}deg)` }"
+              @load="previewLoading = false"
+              @error="previewLoading = false"
             />
+            <div
+              v-if="previewLoading"
+              class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800"
+            >
+              <USkeleton class="w-full h-full" />
+            </div>
             <div class="absolute top-2 right-2 flex gap-2">
               <UButton
                 icon="lucide:rotate-ccw"
@@ -350,6 +358,41 @@
             </div>
           </div>
         </div>
+        <div
+          v-else
+          class="space-y-6 max-h-[calc(100vh-10rem)] overflow-y-auto pr-2"
+        >
+          <div class="relative aspect-video rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+            <USkeleton class="absolute inset-0" />
+          </div>
+          <div class="space-y-4">
+            <USkeleton class="h-5 w-40" />
+            <USkeleton class="h-10 w-full" />
+            <USkeleton class="h-5 w-32" />
+            <USkeleton class="h-10 w-full" />
+            <USkeleton class="h-5 w-48" />
+            <div class="space-y-2">
+              <USkeleton class="h-5 w-24" />
+              <div class="flex flex-wrap gap-2">
+                <USkeleton class="h-6 w-16 rounded-full" />
+                <USkeleton class="h-6 w-20 rounded-full" />
+                <USkeleton class="h-6 w-12 rounded-full" />
+              </div>
+            </div>
+          </div>
+          <USeparator />
+          <div class="space-y-3">
+            <USkeleton class="h-5 w-28" />
+            <div class="grid grid-cols-2 gap-2">
+              <USkeleton class="h-4 w-24" />
+              <USkeleton class="h-4 w-24" />
+              <USkeleton class="h-4 w-20" />
+              <USkeleton class="h-4 w-28" />
+              <USkeleton class="h-4 w-16" />
+              <USkeleton class="h-4 w-24" />
+            </div>
+          </div>
+        </div>
       </template>
 
       <template #footer>
@@ -427,6 +470,7 @@ const saving = ref(false)
 const tagInput = ref("")
 const photoRotation = ref(0)
 const slideoverBodyRef = useTemplateRef<HTMLElement>("slideoverBodyRef")
+const previewLoading = ref(false)
 
 // Delete confirmation dialog
 const showDeleteConfirm = ref(false)
@@ -461,6 +505,7 @@ async function openPhotoDetails(photoId: string) {
   try {
     const photo = await $fetch<PhotoDetail>(`/api/v1/admin/photos/${photoId}`)
     selectedPhoto.value = photo
+    previewLoading.value = true
     photoForm.title = photo.title || ""
     photoForm.description = photo.description || ""
     photoForm.visibility = photo.visibility || "public"
