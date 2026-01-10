@@ -150,6 +150,7 @@
       v-model:open="isPhotoDetailsOpen"
       :title="t('photo_details_title')"
       :modal="false"
+      :dismissible="false"
     >
       <template #body>
         <div
@@ -425,7 +426,7 @@ const selectedPhoto = ref<PhotoDetail | null>(null)
 const saving = ref(false)
 const tagInput = ref("")
 const photoRotation = ref(0)
-const slideoverBodyRef = ref<HTMLElement | null>(null)
+const slideoverBodyRef = useTemplateRef<HTMLElement>("slideoverBodyRef")
 
 // Delete confirmation dialog
 const showDeleteConfirm = ref(false)
@@ -456,6 +457,7 @@ const albumOptions = computed(() => [
 ])
 
 async function openPhotoDetails(photoId: string) {
+  isPhotoDetailsOpen.value = true
   try {
     const photo = await $fetch<PhotoDetail>(`/api/v1/admin/photos/${photoId}`)
     selectedPhoto.value = photo
@@ -465,7 +467,6 @@ async function openPhotoDetails(photoId: string) {
     photoForm.tags = photo.tags?.map((t: any) => t.name) || []
     photoForm.albumIds = photo.albums?.map((a: any) => a.id) || []
     photoRotation.value = photo.rotation || 0
-    isPhotoDetailsOpen.value = true
 
     await nextTick()
     slideoverBodyRef.value?.scrollTo({ top: 0, behavior: "smooth" })
