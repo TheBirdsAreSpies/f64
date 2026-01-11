@@ -63,26 +63,49 @@
       <ClientOnly>
         <div
           v-if="photos.length"
-          class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+          class="space-y-4"
         >
-          <NuxtLink
-            v-for="photo in photos"
-            :key="photo.id"
-            :to="localePath(`/admin/photos/${photo.id}`)"
-            class="group relative aspect-square overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800"
-          >
-            <img
-              :src="photo.thumbnailPath"
-              :alt="photo.title"
-              class="h-full w-full object-cover transition-transform"
-              :style="{
-                transform: photo.rotation
-                  ? `rotate(${photo.rotation}deg)`
-                  : 'none',
-              }"
-            />
-            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors pointer-events-none" />
-          </NuxtLink>
+          <UAlert
+            v-if="showCoverPhotoAlert"
+            icon="lucide:info"
+            color="info"
+            :title="t('admin_album_cover_photo_title')"
+            :description="t('admin_album_cover_photo_description')"
+            class="mb-4"
+            :close="{
+              color: 'neutral',
+              variant: 'subtle',
+            }"
+            @update:open="hideCoverPhotoAlert"
+          />
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div
+              v-for="photo in photos"
+              :key="photo.id"
+              class="relative aspect-square overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800 group cursor-pointer"
+              :class="album?.coverPhotoId === photo.id && 'ring-2 ring-primary-500'"
+              @contextmenu.prevent="(e) => showPhotoMenu(photo, e)"
+            >
+              <img
+                :src="photo.thumbnailPath"
+                :alt="photo.title"
+                class="h-full w-full object-cover transition-transform group-hover:scale-110"
+                :style="{
+                  transform: photo.rotation
+                    ? `rotate(${photo.rotation}deg)`
+                    : 'none',
+                }"
+              />
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors pointer-events-none" />
+              <UBadge
+                v-if="album?.coverPhotoId === photo.id"
+                color="primary"
+                class="absolute top-2 right-2"
+              >
+                {{ t('admin_album_cover_photo_label') }}
+              </UBadge>
+            </div>
+          </div>
         </div>
 
         <div
@@ -155,6 +178,17 @@
             </UFormField>
           </div>
 
+          <UFormField :label="t('admin_album_field_cover_photo')">
+            <USelectMenu
+              v-model="albumForm.coverPhotoId"
+              :items="photos.map(p => ({ label: p.title || p.id, value: p.id }))"
+              value-key="value"
+              searchable
+              placeholder="Select a cover photo"
+              class="w-full"
+            />
+          </UFormField>
+
           <UFormField :label="t('admin_album_field_tags')">
             <div class="space-y-2">
               <div
@@ -208,13 +242,37 @@
         </UButton>
       </template>
     </USlideover>
+
+    <!-- Photo Context Menu -->
+    <div
+      v-if="photoContextMenu"
+      class="fixed bg-white dark:bg-neutral-800 rounded-lg shadow-lg border border-neutral-200 dark:border-neutral-700 z-50"
+      :style="{ top: `${photoContextMenu.y}px`, left: `${photoContextMenu.x}px` }"
+      @click.stop="photoContextMenu = null"
+      @contextmenu.prevent="photoContextMenu = null"
+    >
+      <UButton
+        variant="ghost"
+        color="neutral"
+        class="w-full justify-start"
+        @click="setCoverPhoto(photoContextMenu.photo.id); photoContextMenu = null"
+      >
+        {{ t('admin_album_set_cover_photo') }}
+      </UButton>
+    </div>
+
+    <!-- Close menu when clicking elsewhere -->
+    <div
+      v-if="photoContextMenu"
+      class="fixed inset-0 z-40"
+      @click="photoContextMenu = null"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import type { Album } from "~~/shared/types/album"
 import type { Photo } from "~~/shared/types/photo"
-import { useAlbumsStore } from "~/stores/albums"
 
 definePageMeta({
   layout: "admin",
@@ -250,6 +308,20 @@ const photoCount = computed(() => {
 const isEditOpen = ref(false)
 const saving = ref(false)
 const tagInput = ref("")
+const photoContextMenu = ref<{ photo: Photo, x: number, y: number } | null>(null)
+const showCoverPhotoAlert = ref(true)
+
+onMounted(() => {
+  const hidden = localStorage.getItem("cover-photo-alert-hidden")
+  if (hidden === "true") {
+    showCoverPhotoAlert.value = false
+  }
+})
+
+function hideCoverPhotoAlert() {
+  showCoverPhotoAlert.value = false
+  localStorage.setItem("cover-photo-alert-hidden", "true")
+}
 
 const albumForm = reactive({
   title: "",
@@ -257,6 +329,7 @@ const albumForm = reactive({
   description: "",
   visibility: "public" as "public" | "private" | "password",
   password: "",
+  coverPhotoId: "",
   tags: [] as string[],
 })
 
@@ -285,6 +358,41 @@ function getVisibilityLabel(visibility: string | undefined) {
   return option?.label || visibility
 }
 
+async function setCoverPhoto(photoId: string) {
+  if (!album.value)
+    return
+
+  try {
+    await $fetch(`/api/v1/albums/${slug.value}`, {
+      method: "patch",
+      body: { coverPhotoId: photoId },
+    })
+
+    await refreshAlbum()
+
+    toast.add({
+      title: t("toast_success"),
+      description: t("admin_album_cover_photo_updated"),
+      color: "success",
+    })
+  } catch (error) {
+    console.error("Failed to set cover photo:", error)
+    toast.add({
+      title: t("toast_error"),
+      description: t("admin_album_cover_photo_failed"),
+      color: "error",
+    })
+  }
+}
+
+function showPhotoMenu(photo: Photo, event: MouseEvent) {
+  photoContextMenu.value = {
+    photo,
+    x: event.clientX,
+    y: event.clientY,
+  }
+}
+
 function formatDate(date: Date | string | undefined) {
   if (!date)
     return t("common_na")
@@ -301,6 +409,7 @@ function editAlbum() {
   albumForm.description = a.description || ""
   albumForm.visibility = a.visibility || "public"
   albumForm.password = ""
+  albumForm.coverPhotoId = a.coverPhotoId || ""
   albumForm.tags = a.tags?.map((t: any) => t.name) || []
 
   isEditOpen.value = true
@@ -330,6 +439,10 @@ async function saveAlbum() {
       description: albumForm.description,
       visibility: albumForm.visibility,
       tags: albumForm.tags,
+    }
+
+    if (albumForm.coverPhotoId) {
+      updateData.coverPhotoId = albumForm.coverPhotoId
     }
 
     if (albumForm.visibility === "password" && albumForm.password) {
