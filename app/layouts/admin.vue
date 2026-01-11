@@ -483,7 +483,6 @@ watch(sidebarOpen, (isOpen) => {
 
 // Navigation helper for mobile that closes sidebar
 async function handleNavigation(path: string) {
-  console.log("Navigating to:", path)
   await navigateTo(path)
   sidebarOpen.value = false
 }
