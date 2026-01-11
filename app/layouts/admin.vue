@@ -20,8 +20,20 @@
     <!-- Left Sidebar -->
     <aside
       class="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 lg:h-screen lg:sticky lg:top-0"
-      :class="sidebarOpen ? 'fixed inset-0 z-40' : 'hidden lg:flex'"
+      :class="sidebarOpen ? 'fixed left-0 top-16 bottom-0 z-50 overflow-y-auto lg:overflow-hidden' : 'hidden lg:flex'"
     >
+      <!-- Mobile Close Button (Landscape) -->
+      <div class="lg:hidden flex sm:hidden items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 shrink-0">
+        <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ t('nav_menu') }}</span>
+        <UButton
+          icon="lucide:x"
+          color="neutral"
+          variant="ghost"
+          size="sm"
+          @click="sidebarOpen = false"
+        />
+      </div>
+
       <!-- Logo (Desktop only) -->
       <div class="p-6 border-b border-gray-200 dark:border-gray-800 hidden lg:block">
         <NuxtLink
@@ -34,7 +46,7 @@
       </div>
 
       <!-- Navigation -->
-      <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
+      <nav class="flex-1 overflow-y-auto p-4 space-y-1">
         <UButton
           :to="localePath('/admin')"
           :color="isActive('/admin') ? 'primary' : 'neutral'"
@@ -43,6 +55,7 @@
           :label="t('nav_dashboard')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin'))"
         />
 
         <!-- Library Section -->
@@ -59,6 +72,7 @@
           :label="t('nav_library')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/photos'))"
         />
         <UButton
           :to="localePath('/admin/albums')"
@@ -68,6 +82,7 @@
           :label="t('nav_albums')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/albums'))"
         />
         <UButton
           :to="localePath('/admin/tags')"
@@ -77,6 +92,7 @@
           :label="t('nav_tags')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/tags'))"
         />
         <UButton
           :to="localePath('/admin/trash')"
@@ -86,6 +102,7 @@
           :label="t('nav_trash')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/trash'))"
         />
         <UButton
           :to="localePath('/admin/photos?filter=favorites')"
@@ -95,6 +112,7 @@
           :label="t('nav_favorites')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/photos?filter=favorites'))"
         />
         <UButton
           :to="localePath('/admin/photos?filter=featured')"
@@ -104,6 +122,7 @@
           :label="t('nav_featured')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/photos?filter=featured'))"
         />
         <UButton
           :to="localePath('/admin/photos?filter=unlisted')"
@@ -113,6 +132,7 @@
           :label="t('nav_unlisted')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/photos?filter=unlisted'))"
         />
         <UButton
           :to="localePath('/admin/photos?filter=private')"
@@ -122,6 +142,7 @@
           :label="t('nav_private')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/photos?filter=private'))"
         />
         <!-- Albums List -->
         <div class="pt-4 pb-2 px-3">
@@ -140,7 +161,7 @@
         </div>
         <div
           v-if="albumsStore.albums?.length"
-          class="space-y-1 max-h-48 overflow-y-auto px-2"
+          class="space-y-1 px-2"
         >
           <UButton
             v-for="album in albumsStore.albums.slice(0, 10)"
@@ -211,7 +232,7 @@
         </div>
         <div
           v-if="years?.length"
-          class="space-y-1 max-h-48 overflow-y-auto px-2"
+          class="space-y-1 px-2"
         >
           <UButton
             v-for="year in years"
@@ -256,6 +277,7 @@
           :label="t('nav_themes')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/themes'))"
         />
         <UButton
           :to="localePath('/admin/settings')"
@@ -265,6 +287,7 @@
           :label="t('nav_site_settings')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/settings'))"
         />
         <UButton
           :to="localePath('/admin/users')"
@@ -274,6 +297,7 @@
           :label="t('nav_users')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/users'))"
         />
 
         <div class="pt-4 pb-2 px-3">
@@ -290,6 +314,7 @@
           :label="t('nav_last_import')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/photos?filter=last-import'))"
         />
         <UButton
           :to="localePath('/admin/import')"
@@ -299,6 +324,7 @@
           :label="t('nav_import')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/import'))"
         />
         <UButton
           :to="localePath('/admin/export')"
@@ -308,6 +334,7 @@
           :label="t('nav_export')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/export'))"
         />
         <UButton
           :to="localePath('/admin/plugins')"
@@ -317,11 +344,12 @@
           :label="t('nav_plugins')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/plugins'))"
         />
       </nav>
 
       <!-- Bottom Actions -->
-      <div class="p-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+      <div class="p-4 border-t border-gray-200 dark:border-gray-800 space-y-2 shrink-0">
         <LanguageSelector />
 
         <UButton
@@ -332,6 +360,7 @@
           :label="t('nav_view_site')"
           block
           class="justify-start"
+          @click.prevent="handleNavigation(localePath('/'))"
         />
 
         <AuthState>
@@ -368,22 +397,20 @@
     </main>
 
     <!-- Mobile Overlay -->
-    <Teleport to="body">
-      <Transition
-        enter-active-class="transition duration-300"
-        enter-from-class="opacity-0"
-        enter-to-class="opacity-100"
-        leave-active-class="transition duration-300"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
-        <div
-          v-if="sidebarOpen"
-          class="lg:hidden fixed inset-0 bg-black/0 z-30"
-          @click="sidebarOpen = false"
-        />
-      </Transition>
-    </Teleport>
+    <Transition
+      enter-active-class="transition duration-300"
+      enter-from-class="opacity-0"
+      enter-to-class="opacity-100"
+      leave-active-class="transition duration-300"
+      leave-from-class="opacity-100"
+      leave-to-class="opacity-0"
+    >
+      <div
+        v-if="sidebarOpen"
+        class="lg:hidden fixed inset-0 bg-black/50 z-30"
+        @click="sidebarOpen = false"
+      />
+    </Transition>
   </div>
 </template>
 
@@ -427,10 +454,39 @@ const { t } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()
 
-// Close sidebar when route changes
-watch(() => route.path, () => {
-  sidebarOpen.value = false
+// Close sidebar when route path changes (not just query params)
+// Don't close sidebar on locale change only
+let isInitialized = false
+
+watch(
+  () => route.path,
+  () => {
+    if (!isInitialized) {
+      isInitialized = true
+      return
+    }
+
+    sidebarOpen.value = false
+  },
+)
+
+// Prevent body scroll when menu is open on mobile
+watch(sidebarOpen, (isOpen) => {
+  if (process.client) {
+    if (isOpen) {
+      document.documentElement.style.overflow = "hidden"
+    } else {
+      document.documentElement.style.overflow = ""
+    }
+  }
 })
+
+// Navigation helper for mobile that closes sidebar
+async function handleNavigation(path: string) {
+  console.log("Navigating to:", path)
+  await navigateTo(path)
+  sidebarOpen.value = false
+}
 
 function isActive(path: string) {
   const currentPath = route.path.replace(/^\/(en|de)/, "") // Remove locale prefix
