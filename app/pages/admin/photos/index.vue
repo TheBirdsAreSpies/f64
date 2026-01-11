@@ -1,156 +1,154 @@
 <template>
   <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-      <div>
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
-          {{ t('photos_title') }}
-        </h1>
-        <p class="text-gray-600 dark:text-gray-400 mt-1">
-          {{ t('photos_description') }}
-        </p>
-      </div>
-      <UButton
-        :to="localePath('/admin/photos/upload')"
-        icon="lucide:upload"
-        :label="t('photos_upload')"
-      />
-    </div>
-
-    <!-- Filters -->
-    <div class="flex gap-3">
-      <UButton
-        :variant="!filter ? 'solid' : 'outline'"
-        :color="!filter ? 'primary' : 'neutral'"
-        :label="t('photos_filter_all')"
-        @click="setFilter(null)"
-      />
-      <UButton
-        :variant="filter === 'my-photos' ? 'solid' : 'outline'"
-        :color="filter === 'my-photos' ? 'primary' : 'neutral'"
-        icon="lucide:user"
-        :label="t('photos_filter_my_photos')"
-        @click="setFilter('my-photos')"
-      />
-      <UButton
-        :variant="filter === 'favorites' ? 'solid' : 'outline'"
-        :color="filter === 'favorites' ? 'primary' : 'neutral'"
-        icon="lucide:star"
-        :label="t('nav_favorites')"
-        @click="setFilter('favorites')"
-      />
-      <UButton
-        :variant="filter === 'featured' ? 'solid' : 'outline'"
-        :color="filter === 'featured' ? 'primary' : 'neutral'"
-        icon="lucide:award"
-        :label="t('nav_featured')"
-        @click="setFilter('featured')"
-      />
-      <UButton
-        :variant="filter === 'unlisted' ? 'solid' : 'outline'"
-        :color="filter === 'unlisted' ? 'primary' : 'neutral'"
-        icon="lucide:eye-off"
-        :label="t('nav_unlisted')"
-        @click="setFilter('unlisted')"
-      />
-      <UButton
-        :variant="filter === 'private' ? 'solid' : 'outline'"
-        :color="filter === 'private' ? 'primary' : 'neutral'"
-        icon="lucide:lock"
-        :label="t('nav_private')"
-        @click="setFilter('private')"
-      />
-      <UButton
-        :variant="filter === 'no-album' ? 'solid' : 'outline'"
-        :color="filter === 'no-album' ? 'primary' : 'neutral'"
-        icon="lucide:folder-x"
-        :label="t('photos_filter_no_album')"
-        @click="setFilter('no-album')"
-      />
-    </div>
-
-    <!-- Photos Grid -->
-    <div
-      v-if="photos?.photos?.length"
-      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+    <UPageHeader
+      :title="t('photos_title')"
+      :description="t('photos_description')"
     >
-      <div
-        v-for="photo in photos.photos"
-        :key="photo.id"
-        class="group relative aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
-        @click="openPhotoDetails(photo.id)"
-      >
-        <NuxtImg
-          :src="photo.thumbnailPath"
-          :alt="photo.title"
-          class="w-full h-full object-cover transition-transform"
-          :style="photo.rotation ? { transform: `rotate(${photo.rotation}deg)` } : {}"
-          loading="lazy"
+      <template #links>
+        <UButton
+          :to="localePath('/admin/photos/upload')"
+          icon="lucide:upload"
+          :label="t('photos_upload')"
         />
-        <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
-          <div class="flex justify-between items-start">
-            <div class="flex gap-1">
-              <UBadge
-                v-if="photo.visibility === 'private'"
-                color="neutral"
-                size="xs"
-              >
-                <UIcon name="lucide:lock" />
-              </UBadge>
-              <UBadge
-                v-if="photo.visibility === 'unlisted'"
-                color="neutral"
-                size="xs"
-              >
-                <UIcon name="lucide:eye-off" />
-              </UBadge>
+      </template>
+    </UPageHeader>
+
+    <UPageBody>
+      <!-- Filters -->
+      <div class="flex gap-3 mb-6">
+        <UButton
+          :variant="!filter ? 'solid' : 'outline'"
+          :color="!filter ? 'primary' : 'neutral'"
+          :label="t('photos_filter_all')"
+          @click="setFilter(null)"
+        />
+        <UButton
+          :variant="filter === 'my-photos' ? 'solid' : 'outline'"
+          :color="filter === 'my-photos' ? 'primary' : 'neutral'"
+          icon="lucide:user"
+          :label="t('photos_filter_my_photos')"
+          @click="setFilter('my-photos')"
+        />
+        <UButton
+          :variant="filter === 'favorites' ? 'solid' : 'outline'"
+          :color="filter === 'favorites' ? 'primary' : 'neutral'"
+          icon="lucide:star"
+          :label="t('nav_favorites')"
+          @click="setFilter('favorites')"
+        />
+        <UButton
+          :variant="filter === 'featured' ? 'solid' : 'outline'"
+          :color="filter === 'featured' ? 'primary' : 'neutral'"
+          icon="lucide:award"
+          :label="t('nav_featured')"
+          @click="setFilter('featured')"
+        />
+        <UButton
+          :variant="filter === 'unlisted' ? 'solid' : 'outline'"
+          :color="filter === 'unlisted' ? 'primary' : 'neutral'"
+          icon="lucide:eye-off"
+          :label="t('nav_unlisted')"
+          @click="setFilter('unlisted')"
+        />
+        <UButton
+          :variant="filter === 'private' ? 'solid' : 'outline'"
+          :color="filter === 'private' ? 'primary' : 'neutral'"
+          icon="lucide:lock"
+          :label="t('nav_private')"
+          @click="setFilter('private')"
+        />
+        <UButton
+          :variant="filter === 'no-album' ? 'solid' : 'outline'"
+          :color="filter === 'no-album' ? 'primary' : 'neutral'"
+          icon="lucide:folder-x"
+          :label="t('photos_filter_no_album')"
+          @click="setFilter('no-album')"
+        />
+      </div>
+
+      <!-- Photos Grid -->
+      <div
+        v-if="photos?.photos?.length"
+        class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+      >
+        <div
+          v-for="photo in photos.photos"
+          :key="photo.id"
+          class="group relative aspect-square rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 cursor-pointer hover:ring-2 hover:ring-primary-500 transition-all"
+          @click="openPhotoDetails(photo.id)"
+        >
+          <NuxtImg
+            :src="photo.thumbnailPath"
+            :alt="photo.title"
+            class="w-full h-full object-cover transition-transform"
+            :style="photo.rotation ? { transform: `rotate(${photo.rotation}deg)` } : {}"
+            loading="lazy"
+          />
+          <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-3">
+            <div class="flex justify-between items-start">
+              <div class="flex gap-1">
+                <UBadge
+                  v-if="photo.visibility === 'private'"
+                  color="neutral"
+                  size="xs"
+                >
+                  <UIcon name="lucide:lock" />
+                </UBadge>
+                <UBadge
+                  v-if="photo.visibility === 'unlisted'"
+                  color="neutral"
+                  size="xs"
+                >
+                  <UIcon name="lucide:eye-off" />
+                </UBadge>
+              </div>
             </div>
-          </div>
-          <div>
-            <p class="text-white font-medium text-sm truncate">
-              {{ photo.title }}
-            </p>
-            <p class="text-white/80 text-xs">
-              {{ formatDate(photo.uploadedAt) }}
-            </p>
+            <div>
+              <p class="text-white font-medium text-sm truncate">
+                {{ photo.title }}
+              </p>
+              <p class="text-white/80 text-xs">
+                {{ formatDate(photo.uploadedAt) }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Empty State -->
-    <div
-      v-else
-      class="text-center py-24"
-    >
-      <UIcon
-        name="lucide:image-off"
-        class="text-6xl text-gray-400 dark:text-gray-600 mb-4"
-      />
-      <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-        {{ t('photos_empty_title') }}
-      </h3>
-      <p class="text-gray-600 dark:text-gray-400 mb-6">
-        {{ t('photos_empty_description') }}
-      </p>
-      <UButton
-        :to="localePath('/admin/photos/upload')"
-        icon="lucide:upload"
-        :label="t('photos_upload')"
-      />
-    </div>
+      <!-- Empty State -->
+      <div
+        v-else
+        class="text-center py-24"
+      >
+        <UIcon
+          name="lucide:image-off"
+          class="text-6xl text-gray-400 dark:text-gray-600 mb-4"
+        />
+        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+          {{ t('photos_empty_title') }}
+        </h3>
+        <p class="text-gray-600 dark:text-gray-400 mb-6">
+          {{ t('photos_empty_description') }}
+        </p>
+        <UButton
+          :to="localePath('/admin/photos/upload')"
+          icon="lucide:upload"
+          :label="t('photos_upload')"
+        />
+      </div>
 
-    <!-- Pagination -->
-    <div
-      v-if="photos?.pagination && photos.pagination.totalPages > 1"
-      class="flex justify-center"
-    >
-      <UPagination
-        v-model:page="page"
-        :total="photos.pagination.total"
-        :items-per-page="photos.pagination.limit"
-      />
-    </div>
+      <!-- Pagination -->
+      <div
+        v-if="photos?.pagination && photos.pagination.totalPages > 1"
+        class="flex justify-center"
+      >
+        <UPagination
+          v-model:page="page"
+          :total="photos.pagination.total"
+          :items-per-page="photos.pagination.limit"
+        />
+      </div>
+    </UPageBody>
 
     <!-- Photo Details Slideover -->
     <USlideover
