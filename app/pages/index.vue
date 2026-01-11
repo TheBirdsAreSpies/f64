@@ -14,23 +14,23 @@
           v-for="album in albums.albums"
           :key="album.id"
           :to="localePath(`/albums/${album.slug}`)"
-          class="group"
+          class="group cursor-pointer"
         >
           <div class="aspect-video overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-800">
             <NuxtImg
               v-if="album.coverPhoto"
               :src="album.coverPhoto.thumbnailPath"
               :alt="album.title"
-              :style="`transform: rotate(${album.coverPhoto.rotation || 0}deg) scale(1.1); transition: transform 300ms ease-out;`"
-              class="w-full h-full object-cover group-hover:scale-110"
+              :style="`transform: rotate(${album.coverPhoto.rotation || 0}deg);`"
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               loading="lazy"
             />
             <NuxtImg
               v-else-if="(album as any).photos?.[0]"
               :src="(album as any).photos[0].thumbnailPath"
               :alt="(album as any).photos[0].title || album.title"
-              :style="`transform: rotate(${(album as any).photos[0].rotation || 0}deg) scale(1.1); transition: transform 300ms ease-out;`"
-              class="w-full h-full object-cover group-hover:scale-110"
+              :style="`transform: rotate(${(album as any).photos[0].rotation || 0}deg);`"
+              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
               loading="lazy"
             />
             <div
