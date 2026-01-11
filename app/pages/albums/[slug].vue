@@ -23,17 +23,17 @@
 
           <div class="flex gap-3 mt-4">
             <UButton
-              type="submit"
-              :loading="verifying"
-            >
-              {{ t('common_submit') }}
-            </UButton>
-            <UButton
               color="neutral"
               variant="outline"
               @click="showPasswordModal = false; navigateTo(localePath('/albums'))"
             >
               {{ t('common_cancel') }}
+            </UButton>
+            <UButton
+              type="submit"
+              :loading="verifying"
+            >
+              {{ t('common_submit') }}
             </UButton>
           </div>
         </UForm>
