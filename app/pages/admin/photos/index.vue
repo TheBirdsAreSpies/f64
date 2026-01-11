@@ -167,7 +167,17 @@
         >
           <!-- Photo Preview -->
           <div class="relative aspect-video rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800">
+            <!-- Thumbnail - shown while original is loading -->
             <NuxtImg
+              v-if="previewLoading"
+              :src="selectedPhoto.thumbnailPath"
+              :alt="selectedPhoto.title"
+              class="w-full h-full object-contain blur-sm"
+              :style="{ transform: `rotate(${photoRotation}deg)` }"
+            />
+            <!-- Original - shown after loading -->
+            <NuxtImg
+              v-show="!previewLoading"
               :src="selectedPhoto.originalPath"
               :alt="selectedPhoto.title"
               class="w-full h-full object-contain"
@@ -175,12 +185,6 @@
               @load="previewLoading = false"
               @error="previewLoading = false"
             />
-            <div
-              v-if="previewLoading"
-              class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800"
-            >
-              <USkeleton class="w-full h-full" />
-            </div>
             <div class="absolute top-2 right-2 flex gap-2">
               <UButton
                 icon="lucide:rotate-ccw"
