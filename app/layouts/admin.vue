@@ -1,9 +1,29 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-gray-950 flex">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col lg:flex-row">
+    <!-- Mobile Header -->
+    <div class="lg:hidden flex items-center justify-between p-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+      <NuxtLink
+        :to="localePath('/admin')"
+        class="flex items-center gap-2"
+      >
+        <AppLogo class="w-6 h-6" />
+        <span class="text-lg font-bold text-gray-900 dark:text-white">ƒ/64</span>
+      </NuxtLink>
+      <UButton
+        icon="lucide:menu"
+        color="neutral"
+        variant="ghost"
+        @click="sidebarOpen = !sidebarOpen"
+      />
+    </div>
+
     <!-- Left Sidebar -->
-    <aside class="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col h-screen sticky top-0">
-      <!-- Logo -->
-      <div class="p-6 border-b border-gray-200 dark:border-gray-800">
+    <aside
+      class="w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 lg:h-screen lg:sticky lg:top-0"
+      :class="sidebarOpen ? 'fixed inset-0 z-40' : 'hidden lg:flex'"
+    >
+      <!-- Logo (Desktop only) -->
+      <div class="p-6 border-b border-gray-200 dark:border-gray-800 hidden lg:block">
         <NuxtLink
           :to="localePath('/admin')"
           class="flex items-center gap-3"
@@ -341,11 +361,29 @@
     </aside>
 
     <!-- Main Content -->
-    <main class="flex-1 overflow-y-auto">
-      <div class="p-8 max-w-400 mx-auto">
+    <main class="flex-1 overflow-y-auto w-full lg:w-auto">
+      <div class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
         <slot />
       </div>
     </main>
+
+    <!-- Mobile Overlay -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-300"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-300"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="sidebarOpen"
+          class="lg:hidden fixed inset-0 bg-black/0 z-30"
+          @click="sidebarOpen = false"
+        />
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -378,6 +416,7 @@ interface YearStat {
   count: number
 }
 
+const sidebarOpen = ref(false)
 const albumsStore = useAlbumsStore()
 await albumsStore.fetchAlbums(10)
 
@@ -387,6 +426,11 @@ const { data: years } = await useFetch<YearStat[]>("/api/v1/admin/photos/years")
 const { t } = useI18n()
 const localePath = useLocalePath()
 const route = useRoute()
+
+// Close sidebar when route changes
+watch(() => route.path, () => {
+  sidebarOpen.value = false
+})
 
 function isActive(path: string) {
   const currentPath = route.path.replace(/^\/(en|de)/, "") // Remove locale prefix
