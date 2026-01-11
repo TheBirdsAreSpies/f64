@@ -60,13 +60,13 @@
       <UPageBody>
         <!-- Tags -->
         <div
-          v-if="album.tags?.length"
-          class="flex gap-2 mb-6"
+          v-if="album.tags && album.tags.length > 0"
+          class="flex flex-wrap gap-2 mb-6"
         >
           <UBadge
             v-for="tag in album.tags"
             :key="tag.id"
-            color="neutral"
+            color="primary"
             variant="subtle"
           >
             {{ tag.name }}
