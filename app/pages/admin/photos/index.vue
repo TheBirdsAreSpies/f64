@@ -261,11 +261,13 @@
                     />
                   </UBadge>
                 </div>
-                <UInput
+                <UInputMenu
                   v-model="tagInput"
+                  :items="tagSuggestions"
                   :placeholder="t('photo_field_tags_placeholder')"
                   class="w-full"
                   @keydown.enter.prevent="addTag"
+                  @update:model-value="(value) => { if (tagSuggestions.includes(value)) addTag() }"
                 />
               </div>
             </UFormField>
@@ -490,6 +492,10 @@ const photoRotation = ref(0)
 const slideoverBodyRef = useTemplateRef<HTMLElement>("slideoverBodyRef")
 const previewLoading = ref(false)
 
+const { data: allTags } = await useFetch<{ tags: Array<{ id: string, name: string }> }>("/api/v1/tags", {
+  query: { limit: 1000 },
+})
+
 // Delete confirmation dialog
 const showDeleteConfirm = ref(false)
 const deletePhotoTitle = ref("")
@@ -517,6 +523,14 @@ const albumOptions = computed(() => [
     value: album.id,
   })),
 ])
+
+const tagSuggestions = computed(() => {
+  if (!allTags.value?.tags)
+    return []
+  return allTags.value.tags
+    .filter(tag => !photoForm.tags.includes(tag.name))
+    .map(tag => tag.name)
+})
 
 async function openPhotoDetails(photoId: string) {
   // If clicking the same photo that's already open, do nothing - otherwise this will vanish the picture
