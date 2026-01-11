@@ -144,6 +144,16 @@
           class="justify-start"
           @click.prevent="handleNavigation(localePath('/admin/photos?filter=private'))"
         />
+        <UButton
+          :to="localePath('/admin/photos?filter=no-album')"
+          :color="isFilterActive('no-album') ? 'primary' : 'neutral'"
+          variant="ghost"
+          icon="lucide:eye-off"
+          :label="t('nav_no_album')"
+          block
+          class="justify-start"
+          @click.prevent="handleNavigation(localePath('/admin/photos?filter=no-album'))"
+        />
         <!-- Albums List -->
         <div class="pt-4 pb-2 px-3">
           <div class="flex items-center justify-between">
@@ -472,7 +482,7 @@ watch(
 
 // Prevent body scroll when menu is open on mobile
 watch(sidebarOpen, (isOpen) => {
-  if (process.client) {
+  if (import.meta.client) {
     if (isOpen) {
       document.documentElement.style.overflow = "hidden"
     } else {
