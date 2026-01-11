@@ -46,9 +46,9 @@
         :title="album.title"
         :description="album.description || undefined"
       >
-        <template #actions>
+        <template #links>
           <UButton
-            to="/albums"
+            :to="localePath('/albums')"
             color="neutral"
             variant="ghost"
             icon="lucide:arrow-left"
