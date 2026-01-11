@@ -342,7 +342,7 @@
 
     <!-- Main Content -->
     <main class="flex-1 overflow-y-auto">
-      <div class="p-8 max-w-[1600px] mx-auto">
+      <div class="p-8 max-w-400 mx-auto">
         <slot />
       </div>
     </main>
