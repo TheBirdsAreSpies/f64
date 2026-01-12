@@ -482,14 +482,16 @@ const localePath = useLocalePath()
 
 const page = ref(Number.parseInt(route.query.page as string) || 1)
 const filter = ref<string | null>(route.query.filter as string || null)
+const year = ref<number | null>(route.query.year ? Number.parseInt(route.query.year as string) : null)
 
 const { data: photos } = await useFetch<PhotosResponse>("/api/v1/admin/photos", {
   query: {
     page,
     limit: 20,
     filter,
+    year,
   },
-  watch: [page, filter],
+  watch: [page, filter, year],
 })
 
 // Photo details slideover
@@ -717,6 +719,7 @@ async function handleDeleteConfirm() {
         page: page.value,
         limit: 20,
         filter: filter.value,
+        year: year.value,
       },
     })
 
@@ -747,6 +750,11 @@ function setFilter(newFilter: string | null) {
 
 watch(() => route.query.filter, (newFilter) => {
   filter.value = newFilter as string || null
+  page.value = 1
+})
+
+watch(() => route.query.year, (newYear) => {
+  year.value = newYear ? Number.parseInt(newYear as string) : null
   page.value = 1
 })
 

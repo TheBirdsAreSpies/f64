@@ -248,8 +248,8 @@
             v-for="year in years"
             :key="year.year"
             :to="localePath(`/admin/photos?year=${year.year}`)"
+            :color="route.query.year === year.year.toString() ? 'primary' : 'neutral'"
             variant="ghost"
-            color="neutral"
             size="xs"
             class="w-full justify-between text-xs"
             block
