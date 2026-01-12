@@ -514,6 +514,14 @@ function isActive(path: string) {
 
   if (targetPath === "/admin" && (currentPath === "/admin" || currentPath === "" || currentPath === "/"))
     return true
+  
+  // For specific album/tag/resource routes (3+ segments), use exact match
+  const targetSegments = targetPath.split("/").filter(Boolean)
+  if (targetSegments.length >= 3) {
+    return currentPath === targetPath
+  }
+  
+  // For section routes, use startsWith
   if (targetPath !== "/admin" && currentPath.startsWith(targetPath))
     return true
 
