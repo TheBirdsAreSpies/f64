@@ -177,8 +177,8 @@
             v-for="album in albumsStore.albums.slice(0, 10)"
             :key="album.id"
             :to="localePath(`/admin/albums/${album.slug}`)"
+            :color="isActive(`/admin/albums/${album.slug}`) ? 'primary' : 'neutral'"
             variant="ghost"
-            color="neutral"
             size="xs"
             class="w-full justify-start text-xs"
             block
