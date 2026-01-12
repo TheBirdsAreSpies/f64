@@ -4,8 +4,10 @@ interface Album {
   id: string
   title: string
   slug: string
+  description?: string | null
   visibility: string
-  coverPhoto: { title: string, thumbnailPath: string } | null
+  coverPhoto: { title: string, thumbnailPath: string, rotation?: number } | null
+  tags?: Array<{ id: string, name: string }>
   _count: { photos: number }
   createdAt: Date
   updatedAt: Date

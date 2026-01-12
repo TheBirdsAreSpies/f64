@@ -90,11 +90,15 @@
 const { t } = useI18n()
 const localePath = useLocalePath()
 
-const { data: albums } = await useFetch("/api/v1/albums")
+const albumsStore = useAlbumsStore()
+
+onMounted(async () => {
+  if (!albumsStore.albums.length) {
+    await albumsStore.fetchAlbums(100)
+  }
+})
 
 const publicAlbums = computed(() => {
-  if (!albums.value?.albums)
-    return []
-  return albums.value.albums.filter(album => album.visibility !== "private")
+  return albumsStore.albums.filter(album => album.visibility !== "private")
 })
 </script>
