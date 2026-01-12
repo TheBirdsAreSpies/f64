@@ -337,16 +337,6 @@
           @click.prevent="handleNavigation(localePath('/admin/import'))"
         />
         <UButton
-          :to="localePath('/admin/export')"
-          :color="isActive('/admin/export') ? 'primary' : 'neutral'"
-          variant="ghost"
-          icon="lucide:download"
-          :label="t('nav_export')"
-          block
-          class="justify-start"
-          @click.prevent="handleNavigation(localePath('/admin/export'))"
-        />
-        <UButton
           :to="localePath('/admin/plugins')"
           :color="isActive('/admin/plugins') ? 'primary' : 'neutral'"
           variant="ghost"
@@ -514,13 +504,13 @@ function isActive(path: string) {
 
   if (targetPath === "/admin" && (currentPath === "/admin" || currentPath === "" || currentPath === "/"))
     return true
-  
+
   // For specific album/tag/resource routes (3+ segments), use exact match
   const targetSegments = targetPath.split("/").filter(Boolean)
   if (targetSegments.length >= 3) {
     return currentPath === targetPath
   }
-  
+
   // For section routes, use startsWith
   if (targetPath !== "/admin" && currentPath.startsWith(targetPath))
     return true
