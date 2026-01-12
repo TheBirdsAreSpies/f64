@@ -467,7 +467,7 @@ async function setCoverPhoto(photoId: string) {
     return
 
   try {
-    await $fetch(`/api/v1/albums/${slug.value}`, {
+    await $fetch(`/api/v1/admin/albums/${slug.value}`, {
       method: "patch",
       body: { coverPhotoId: photoId },
     })
@@ -610,7 +610,7 @@ async function undoBulkRemove() {
     })
 
     if (lastRemovedCoverPhotoId.value) {
-      await $fetch(`/api/v1/albums/${slug.value}`, {
+      await $fetch(`/api/v1/admin/albums/${slug.value}`, {
         method: "patch",
         body: { coverPhotoId: lastRemovedCoverPhotoId.value },
       })
@@ -732,7 +732,7 @@ async function saveAlbum() {
       updateData.password = albumForm.password
     }
 
-    const updatedAlbum = await $fetch(`/api/v1/albums/${slug.value}`, {
+    const updatedAlbum = await $fetch(`/api/v1/admin/albums/${slug.value}`, {
       method: "patch",
       body: updateData,
     })

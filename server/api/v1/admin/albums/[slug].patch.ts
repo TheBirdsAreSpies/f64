@@ -1,11 +1,12 @@
 import { prisma } from "~~/lib/prisma"
 import { albumUpdateSchema } from "~~/server/schemas/album.schema"
-import { AlbumPermission } from "~~/server/types/permissions"
-import { checkPermission } from "~~/server/utils/checkPermission"
+import { hasRole } from "~~/server/utils/hasRole"
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
   const slug = getRouterParam(event, "slug")
+
+  await hasRole(session, "admin")
 
   if (!slug) {
     throw createError({ statusCode: 400, message: "Album slug is required" })
@@ -17,11 +18,6 @@ export default defineEventHandler(async (event) => {
 
   if (!album) {
     throw createError({ statusCode: 404, message: "Album not found" })
-  }
-
-  const isOwner = album.createdBy === session.user.id
-  if (!isOwner) {
-    await checkPermission(session, AlbumPermission.EditAny)
   }
 
   const body = await readBody(event)
@@ -57,7 +53,7 @@ export default defineEventHandler(async (event) => {
       updatedBy: session.user.id,
       tags: validated.tags
         ? {
-            set: [], // Clear existing tags
+            set: [],
             connectOrCreate: validated.tags.map((tag: string) => ({
               where: { name: tag },
               create: { name: tag, slug: tag.toLowerCase().replace(/\s+/g, "-") },
