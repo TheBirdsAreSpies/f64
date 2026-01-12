@@ -4,10 +4,7 @@ export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, "slug")
 
   if (!slug) {
-    throw createError({
-      statusCode: 400,
-      message: "Album slug is required",
-    })
+    throw createError({ statusCode: 400, message: "Album slug is required" })
   }
 
   const album = await prisma.album.findUnique({

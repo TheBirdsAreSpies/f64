@@ -2,8 +2,8 @@ import { prisma } from "~~/lib/prisma"
 
 export default defineEventHandler(async (event) => {
   const slug = getRouterParam(event, "slug")
-  // check if album is private -> admin role
-  // check if album is password protected -> check password header
+  // TODO check if album is private -> admin role
+  // TODO check if album is password protected -> check password header
 
   if (!slug) {
     throw createError({
@@ -12,7 +12,6 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Find album by slug
   const album = await prisma.album.findUnique({
     where: { slug },
     select: { id: true },
@@ -25,7 +24,6 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  // Fetch photos in the album
   const photos = await prisma.photo.findMany({
     where: {
       albums: {
