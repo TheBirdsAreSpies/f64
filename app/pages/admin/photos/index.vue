@@ -15,11 +15,12 @@
 
     <UPageBody>
       <!-- Filters -->
-      <div class="flex gap-3 mb-6">
+      <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 sm:gap-3 mb-6">
         <UButton
           :variant="!filter ? 'solid' : 'outline'"
           :color="!filter ? 'primary' : 'neutral'"
           :label="t('photos_filter_all')"
+          class="w-full sm:w-auto"
           @click="setFilter(null)"
         />
         <UButton
@@ -27,6 +28,7 @@
           :color="filter === 'my-photos' ? 'primary' : 'neutral'"
           icon="lucide:user"
           :label="t('photos_filter_my_photos')"
+          class="w-full sm:w-auto"
           @click="setFilter('my-photos')"
         />
         <UButton
@@ -34,6 +36,7 @@
           :color="filter === 'favorites' ? 'primary' : 'neutral'"
           icon="lucide:star"
           :label="t('nav_favorites')"
+          class="w-full sm:w-auto"
           @click="setFilter('favorites')"
         />
         <UButton
@@ -41,6 +44,7 @@
           :color="filter === 'featured' ? 'primary' : 'neutral'"
           icon="lucide:award"
           :label="t('nav_featured')"
+          class="w-full sm:w-auto"
           @click="setFilter('featured')"
         />
         <UButton
@@ -48,6 +52,7 @@
           :color="filter === 'unlisted' ? 'primary' : 'neutral'"
           icon="lucide:eye-off"
           :label="t('nav_unlisted')"
+          class="w-full sm:w-auto"
           @click="setFilter('unlisted')"
         />
         <UButton
@@ -55,6 +60,7 @@
           :color="filter === 'private' ? 'primary' : 'neutral'"
           icon="lucide:lock"
           :label="t('nav_private')"
+          class="w-full sm:w-auto"
           @click="setFilter('private')"
         />
         <UButton
@@ -62,6 +68,7 @@
           :color="filter === 'no-album' ? 'primary' : 'neutral'"
           icon="lucide:folder-x"
           :label="t('photos_filter_no_album')"
+          class="w-full sm:w-auto"
           @click="setFilter('no-album')"
         />
       </div>
