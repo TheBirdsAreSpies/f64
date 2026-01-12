@@ -360,7 +360,17 @@
 
       <!-- Bottom Actions -->
       <div class="p-4 border-t border-gray-200 dark:border-gray-800 space-y-2 shrink-0">
-        <LanguageSelector />
+        <UButton
+          :icon="colorMode.value === 'dark' ? 'lucide:sun' : 'lucide:moon'"
+          color="neutral"
+          variant="ghost"
+          :label="colorMode.value === 'dark' ? t('theme_light') : t('theme_dark')"
+          block
+          class="justify-start"
+          @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
+        />
+
+        <LanguageSelector class="w-full" />
 
         <UButton
           :to="localePath('/')"
@@ -455,6 +465,7 @@ interface YearStat {
 
 const sidebarOpen = ref(false)
 const albumsStore = useAlbumsStore()
+const colorMode = useColorMode()
 await albumsStore.fetchAlbums(10)
 
 const { data: tags } = await useFetch<TagsResponse>("/api/v1/tags", { query: { limit: 15 } })

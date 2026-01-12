@@ -54,6 +54,8 @@
   "nav_export": "Export",
   "nav_plugins": "Plugins",
   "nav_menu": "Menu",
+  "theme_dark": "Dark Mode",
+  "theme_light": "Light Mode",
   "metadata_title": "Metadata",
   "metadata_remove_all": "Remove All",
   "metadata_camera": "Camera",

@@ -11,8 +11,17 @@
             <span class="text-lg sm:text-2xl font-bold">ƒ/64</span>
           </NuxtLink>
           <div class="hidden lg:block h-6 w-px bg-gray-200 dark:bg-gray-800" />
+          <UButton
+            v-if="!publicAlbums.length"
+            :to="localePath('/albums')"
+            color="neutral"
+            variant="ghost"
+            class="hidden lg:flex"
+          >
+            {{ t('nav_albums') }}
+          </UButton>
           <UDropdownMenu
-            v-if="publicAlbums.length"
+            v-else
             :items="albumMenuItems"
             class="hidden lg:block"
           >
@@ -24,15 +33,6 @@
               {{ t('nav_albums') }}
             </UButton>
           </UDropdownMenu>
-          <UButton
-            v-else
-            :to="localePath('/albums')"
-            color="neutral"
-            variant="ghost"
-            class="hidden lg:flex"
-          >
-            {{ t('nav_albums') }}
-          </UButton>
         </div>
       </template>
       <template #right>
@@ -68,6 +68,13 @@
             </div>
           </template>
         </AuthState>
+        <UButton
+          :icon="colorMode.value === 'dark' ? 'lucide:sun' : 'lucide:moon'"
+          color="neutral"
+          variant="ghost"
+          :padded="false"
+          @click="colorMode.preference = colorMode.value === 'dark' ? 'light' : 'dark'"
+        />
       </template>
 
       <template #body>
@@ -174,6 +181,7 @@
 <script setup lang="ts">
 const localePath = useLocalePath()
 const { t, d } = useI18n()
+const colorMode = useColorMode()
 
 const albumsStore = useAlbumsStore()
 
