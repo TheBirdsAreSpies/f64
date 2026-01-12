@@ -7,11 +7,11 @@
 
     <UPageBody>
       <div
-        v-if="albums?.albums?.length"
+        v-if="publicAlbums?.length"
         class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
         <NuxtLink
-          v-for="album in albums.albums"
+          v-for="album in publicAlbums"
           :key="album.id"
           :to="localePath(`/albums/${album.slug}`)"
           class="group cursor-pointer"
@@ -91,4 +91,10 @@ const { t } = useI18n()
 const localePath = useLocalePath()
 
 const { data: albums } = await useFetch("/api/v1/albums")
+
+const publicAlbums = computed(() => {
+  if (!albums.value?.albums)
+    return []
+  return albums.value.albums.filter(album => album.visibility !== "private")
+})
 </script>

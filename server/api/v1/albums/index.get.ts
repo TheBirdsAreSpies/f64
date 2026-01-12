@@ -1,6 +1,8 @@
 import { prisma } from "~~/lib/prisma"
 
 export default defineEventHandler(async (event) => {
+  const session = await getUserSession(event)
+
   const query = getQuery(event)
   const page = Number(query.page) || 1
   const limit = Number(query.limit) || 20
@@ -8,10 +10,15 @@ export default defineEventHandler(async (event) => {
 
   const where: any = {}
 
-  // Filter by visibility - only show public albums unless user has permission
-  const session = await getUserSession(event)
-  if (!session.user) {
-    where.visibility = "public"
+  let isAdmin = false
+  if (session.user) {
+    const adminCheck = await hasRole(session as any, "admin")
+    isAdmin = adminCheck.isValid
+  }
+
+  // Filter by visibility - only show public and password-protected albums for non-admin users
+  if (!isAdmin) {
+    where.visibility = { not: "private" }
   } else if (visibility) {
     where.visibility = visibility
   }
