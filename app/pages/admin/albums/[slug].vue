@@ -19,6 +19,22 @@
           :label="t('admin_album_edit')"
           @click="editAlbum"
         />
+        <UButton
+          color="secondary"
+          variant="outline"
+          icon="lucide:check-square"
+          :label="selectionMode ? t('admin_album_selection_done') : t('admin_album_selection_start')"
+          @click="toggleSelectionMode"
+        />
+        <UButton
+          v-if="selectionMode"
+          color="error"
+          variant="solid"
+          icon="lucide:trash-2"
+          :disabled="selectedPhotoIds.size === 0"
+          :label="t('admin_album_remove_selected')"
+          @click="confirmBulkRemove"
+        />
       </template>
     </UPageHeader>
 
@@ -92,6 +108,7 @@
               class="relative aspect-square overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800 group cursor-pointer"
               :class="album?.coverPhotoId === photo.id && 'ring-2 ring-primary-500'"
               @contextmenu.prevent="(e) => showPhotoMenu(photo, e)"
+              @click="onPhotoClick(photo)"
               @touchstart="(e) => handleTouchStart(photo, e)"
               @touchend="handleTouchEnd"
               @touchmove="handleTouchEnd"
@@ -115,6 +132,19 @@
               >
                 {{ t('admin_album_cover_photo_label') }}
               </UBadge>
+              <div
+                v-if="selectionMode"
+                class="absolute top-2 left-2"
+              >
+                <UCheckbox
+                  :model-value="selectedPhotoIds.has(photo.id)"
+                  @update:model-value="(val) => toggleSelectPhoto(photo, Boolean(val))"
+                />
+              </div>
+              <div
+                v-if="selectionMode && selectedPhotoIds.has(photo.id)"
+                class="absolute inset-0 ring-2 ring-error-500/70"
+              />
             </div>
           </div>
         </div>
@@ -270,6 +300,14 @@
       >
         {{ t('admin_album_set_cover_photo') }}
       </UButton>
+      <UButton
+        variant="ghost"
+        color="error"
+        class="w-full justify-start"
+        @click="removePhotoFromAlbum(photoContextMenu.photo); photoContextMenu = null"
+      >
+        {{ t('admin_album_remove_photo') }}
+      </UButton>
     </div>
 
     <!-- Close menu when clicking elsewhere -->
@@ -278,6 +316,56 @@
       class="fixed inset-0 z-40"
       @click="photoContextMenu = null"
     />
+
+    <!-- Remove Photo Confirmation Dialog -->
+    <ConfirmDialog
+      v-model:open="showRemoveConfirm"
+      :title="t('admin_album_remove_photo')"
+      :message="t('admin_album_remove_photo_confirm')"
+      :confirm-text="t('common_remove')"
+      :cancel-text="t('common_cancel')"
+      confirm-color="error"
+      @confirm="handleRemoveConfirm"
+    />
+
+    <!-- Bulk Remove Confirmation Dialog -->
+    <ConfirmDialog
+      v-model:open="showBulkRemoveConfirm"
+      :title="t('admin_album_remove_selected')"
+      :message="t('admin_album_bulk_remove_confirm', { count: selectedPhotoIds.size })"
+      :confirm-text="t('common_remove')"
+      :cancel-text="t('common_cancel')"
+      confirm-color="error"
+      @confirm="handleBulkRemoveConfirm"
+    />
+
+    <!-- Undo Banner -->
+    <div
+      v-if="lastRemovedPhotoIds.length"
+      class="fixed inset-x-0 bottom-4 flex justify-center px-4 z-40 pointer-events-none"
+    >
+      <UAlert
+        icon="lucide:history"
+        color="warning"
+        :title="t('admin_album_undo_prompt', { count: lastRemovedPhotoIds.length })"
+        :description="t('admin_album_undo_description')"
+        class="max-w-xl w-full md:w-auto pointer-events-auto"
+        :close="{
+          color: 'neutral',
+          variant: 'subtle',
+        }"
+      >
+        <template #actions>
+          <UButton
+            color="primary"
+            variant="solid"
+            @click="undoBulkRemove"
+          >
+            {{ t('common_undo') }}
+          </UButton>
+        </template>
+      </UAlert>
+    </div>
   </div>
 </template>
 
@@ -303,7 +391,7 @@ const { data: album, refresh: refreshAlbum } = await useFetch<Album>(`/api/v1/ad
   query: { includeCount: true },
 })
 
-const { data: photosData } = await useFetch<Photo[]>(`/api/v1/admin/albums/${slug.value}/photos`)
+const { data: photosData, refresh: refreshPhotos } = await useFetch<Photo[]>(`/api/v1/admin/albums/${slug.value}/photos`)
 const photos = computed(() => Array.isArray(photosData.value) ? photosData.value : [])
 
 const photoCount = computed(() => {
@@ -322,6 +410,14 @@ const tagInput = ref("")
 const photoContextMenu = ref<{ photo: Photo, x: number, y: number } | null>(null)
 const showCoverPhotoAlert = ref(true)
 const longPressTimer = ref<number | null>(null)
+const showRemoveConfirm = ref(false)
+const photoToRemove = ref<Photo | null>(null)
+const selectionMode = ref(false)
+const selectedPhotoIds = ref(new Set<string>())
+const showBulkRemoveConfirm = ref(false)
+const lastRemovedPhotoIds = ref<string[]>([])
+const lastRemovedCoverPhotoId = ref<string | null>(null)
+let undoTimer: number | null = null
 
 onMounted(() => {
   const hidden = localStorage.getItem("cover-photo-alert-hidden")
@@ -392,6 +488,156 @@ async function setCoverPhoto(photoId: string) {
     toast.add({
       title: t("toast_error"),
       description: t("admin_album_cover_photo_failed"),
+      color: "error",
+    })
+  }
+}
+
+async function removePhotoFromAlbum(photo: Photo) {
+  if (!album.value)
+    return
+
+  photoToRemove.value = photo
+  showRemoveConfirm.value = true
+}
+
+async function handleRemoveConfirm() {
+  if (!album.value || !photoToRemove.value)
+    return
+
+  try {
+    await $fetch(`/api/v1/admin/albums/${slug.value}/photos/${photoToRemove.value.id}`, {
+      method: "DELETE" as any,
+    })
+
+    await Promise.all([refreshAlbum(), refreshPhotos()])
+
+    toast.add({
+      title: t("toast_success"),
+      description: t("admin_album_photo_removed"),
+      color: "success",
+    })
+  } catch (error) {
+    console.error("Failed to remove photo from album:", error)
+    toast.add({
+      title: t("toast_error"),
+      description: t("admin_album_photo_remove_failed"),
+      color: "error",
+    })
+  } finally {
+    photoToRemove.value = null
+  }
+}
+
+function toggleSelectionMode() {
+  selectionMode.value = !selectionMode.value
+  if (!selectionMode.value) {
+    selectedPhotoIds.value.clear()
+  }
+}
+
+function onPhotoClick(photo: Photo) {
+  if (!selectionMode.value)
+    return
+  const isSelected = selectedPhotoIds.value.has(photo.id)
+  if (isSelected)
+    selectedPhotoIds.value.delete(photo.id)
+  else selectedPhotoIds.value.add(photo.id)
+}
+
+function toggleSelectPhoto(photo: Photo, val: boolean) {
+  if (val)
+    selectedPhotoIds.value.add(photo.id)
+  else selectedPhotoIds.value.delete(photo.id)
+}
+
+function confirmBulkRemove() {
+  if (selectedPhotoIds.value.size === 0)
+    return
+  showBulkRemoveConfirm.value = true
+}
+
+async function handleBulkRemoveConfirm() {
+  if (!album.value)
+    return
+  const photoIds = Array.from(selectedPhotoIds.value)
+  try {
+    const res = await $fetch<{ success: boolean, removedCount: number }>(`/api/v1/admin/albums/${slug.value}/photos`, {
+      method: "DELETE" as any,
+      body: { photoIds },
+    })
+
+    lastRemovedPhotoIds.value = photoIds
+    if (album.value.coverPhotoId && selectedPhotoIds.value.has(album.value.coverPhotoId)) {
+      lastRemovedCoverPhotoId.value = album.value.coverPhotoId
+    } else {
+      lastRemovedCoverPhotoId.value = null
+    }
+    if (undoTimer) {
+      clearTimeout(undoTimer)
+      undoTimer = null
+    }
+    undoTimer = window.setTimeout(() => {
+      lastRemovedPhotoIds.value = []
+      lastRemovedCoverPhotoId.value = null
+      undoTimer = null
+    }, 15000)
+
+    selectedPhotoIds.value.clear()
+    selectionMode.value = false
+    showBulkRemoveConfirm.value = false
+
+    await Promise.all([refreshAlbum(), refreshPhotos()])
+
+    toast.add({
+      title: t("toast_success"),
+      description: t("admin_album_photos_removed", { count: res.removedCount }),
+      color: "success",
+    })
+  } catch (error) {
+    console.error("Bulk remove failed:", error)
+    toast.add({
+      title: t("toast_error"),
+      description: t("admin_album_photo_remove_failed"),
+      color: "error",
+    })
+  }
+}
+
+async function undoBulkRemove() {
+  if (!album.value || lastRemovedPhotoIds.value.length === 0)
+    return
+  try {
+    await $fetch(`/api/v1/admin/albums/${slug.value}/photos`, {
+      method: "POST" as any,
+      body: { photoIds: lastRemovedPhotoIds.value },
+    })
+
+    if (lastRemovedCoverPhotoId.value) {
+      await $fetch(`/api/v1/albums/${slug.value}`, {
+        method: "patch",
+        body: { coverPhotoId: lastRemovedCoverPhotoId.value },
+      })
+    }
+
+    await Promise.all([refreshAlbum(), refreshPhotos()])
+    lastRemovedPhotoIds.value = []
+    lastRemovedCoverPhotoId.value = null
+    if (undoTimer) {
+      clearTimeout(undoTimer)
+      undoTimer = null
+    }
+
+    toast.add({
+      title: t("toast_success"),
+      description: t("admin_album_undo_success"),
+      color: "success",
+    })
+  } catch (error) {
+    console.error("Undo failed:", error)
+    toast.add({
+      title: t("toast_error"),
+      description: t("admin_album_undo_failed"),
       color: "error",
     })
   }
