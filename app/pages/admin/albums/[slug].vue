@@ -491,7 +491,7 @@ async function saveAlbum() {
     }
 
     const updatedAlbum = await $fetch(`/api/v1/albums/${slug.value}`, {
-      method: "patch" as any,
+      method: "patch",
       body: updateData,
     })
 
