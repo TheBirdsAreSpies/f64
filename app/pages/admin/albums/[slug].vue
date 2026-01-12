@@ -6,6 +6,13 @@
     >
       <template #links>
         <UButton
+          :to="localePath(`/admin/photos/upload?albumId=${album?.id}&albumSlug=${slug}`)"
+          color="primary"
+          variant="solid"
+          icon="lucide:upload"
+          :label="t('photos_upload')"
+        />
+        <UButton
           color="primary"
           variant="solid"
           icon="lucide:settings"

@@ -170,6 +170,7 @@ definePageMeta({
 
 const { t } = useI18n()
 const localePath = useLocalePath()
+const route = useRoute()
 
 const albumsStore = useAlbumsStore()
 await albumsStore.fetchAlbums()
@@ -196,6 +197,14 @@ const form = reactive({
   albumIds: [] as string[],
   tags: [] as string[],
   visibility: "public",
+})
+
+// Preselect album if albumId is in query params
+onMounted(() => {
+  const albumId = route.query.albumId as string
+  if (albumId && !form.albumIds.includes(albumId)) {
+    form.albumIds.push(albumId)
+  }
 })
 
 watch(uploadedFiles, async (files) => {
@@ -375,7 +384,12 @@ async function onSubmit() {
     }
 
     if (errorCount === 0 && duplicateCount === 0) {
-      navigateTo(localePath("/admin/photos"))
+      const albumSlug = route.query.albumSlug as string
+      if (albumSlug) {
+        navigateTo(localePath(`/admin/albums/${albumSlug}`))
+      } else {
+        navigateTo(localePath("/admin/photos"))
+      }
     }
   } finally {
     uploading.value = false
