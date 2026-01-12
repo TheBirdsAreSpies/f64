@@ -468,7 +468,7 @@ async function setCoverPhoto(photoId: string) {
 
   try {
     await $fetch(`/api/v1/admin/albums/${slug.value}`, {
-      method: "patch",
+      method: "PATCH",
       body: { coverPhotoId: photoId },
     })
 
@@ -503,7 +503,7 @@ async function handleRemoveConfirm() {
 
   try {
     await $fetch(`/api/v1/admin/albums/${slug.value}/photos/${photoToRemove.value.id}`, {
-      method: "DELETE" as any,
+      method: "DELETE",
     })
 
     await Promise.all([refreshAlbum(), refreshPhotos()])
@@ -559,7 +559,7 @@ async function handleBulkRemoveConfirm() {
   const photoIds = Array.from(selectedPhotoIds.value)
   try {
     const res = await $fetch<{ success: boolean, removedCount: number }>(`/api/v1/admin/albums/${slug.value}/photos`, {
-      method: "DELETE" as any,
+      method: "DELETE",
       body: { photoIds },
     })
 
@@ -605,13 +605,13 @@ async function undoBulkRemove() {
     return
   try {
     await $fetch(`/api/v1/admin/albums/${slug.value}/photos`, {
-      method: "POST" as any,
+      method: "POST",
       body: { photoIds: lastRemovedPhotoIds.value },
     })
 
     if (lastRemovedCoverPhotoId.value) {
       await $fetch(`/api/v1/admin/albums/${slug.value}`, {
-        method: "patch",
+        method: "PATCH",
         body: { coverPhotoId: lastRemovedCoverPhotoId.value },
       })
     }
@@ -733,7 +733,7 @@ async function saveAlbum() {
     }
 
     const updatedAlbum = await $fetch(`/api/v1/admin/albums/${slug.value}`, {
-      method: "patch",
+      method: "PATCH",
       body: updateData,
     })
 
