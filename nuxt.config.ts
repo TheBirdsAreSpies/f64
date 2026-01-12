@@ -27,6 +27,15 @@ export default defineNuxtConfig({
     public: {
       baseURL: process.env.NUXT_PUBLIC_BASE_URL || "http://localhost:3000",
     },
+    session: {
+      name: import.meta.env.NUXT_SESSION_NAME || "f64_session",
+      password: import.meta.env.NUXT_SESSION_PASSWORD,
+      cookie: {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+      },
+    },
   },
   vite: {
     define: {
