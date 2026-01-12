@@ -350,10 +350,6 @@
         :title="t('admin_album_undo_prompt', { count: lastRemovedPhotoIds.length })"
         :description="t('admin_album_undo_description')"
         class="max-w-xl w-full md:w-auto pointer-events-auto"
-        :close="{
-          color: 'neutral',
-          variant: 'subtle',
-        }"
       >
         <template #actions>
           <UButton
