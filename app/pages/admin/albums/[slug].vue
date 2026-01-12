@@ -92,6 +92,9 @@
               class="relative aspect-square overflow-hidden rounded-lg bg-neutral-100 dark:bg-neutral-800 group cursor-pointer"
               :class="album?.coverPhotoId === photo.id && 'ring-2 ring-primary-500'"
               @contextmenu.prevent="(e) => showPhotoMenu(photo, e)"
+              @touchstart="(e) => handleTouchStart(photo, e)"
+              @touchend="handleTouchEnd"
+              @touchmove="handleTouchEnd"
             >
               <NuxtImg
                 :src="photo.thumbnailPath"
@@ -318,6 +321,7 @@ const saving = ref(false)
 const tagInput = ref("")
 const photoContextMenu = ref<{ photo: Photo, x: number, y: number } | null>(null)
 const showCoverPhotoAlert = ref(true)
+const longPressTimer = ref<number | null>(null)
 
 onMounted(() => {
   const hidden = localStorage.getItem("cover-photo-alert-hidden")
@@ -393,11 +397,40 @@ async function setCoverPhoto(photoId: string) {
   }
 }
 
-function showPhotoMenu(photo: Photo, event: MouseEvent) {
+function showPhotoMenu(photo: Photo, event: MouseEvent | TouchEvent) {
+  let x: number
+  let y: number
+
+  if (event instanceof MouseEvent) {
+    x = event.clientX
+    y = event.clientY
+  } else {
+    // TouchEvent
+    const touch = event.touches?.[0] || event.changedTouches?.[0]
+    if (!touch)
+      return
+
+    x = touch.clientX
+    y = touch.clientY
+  }
+
   photoContextMenu.value = {
     photo,
-    x: event.clientX,
-    y: event.clientY,
+    x,
+    y,
+  }
+}
+
+function handleTouchStart(photo: Photo, event: TouchEvent) {
+  longPressTimer.value = window.setTimeout(() => {
+    showPhotoMenu(photo, event)
+  }, 500)
+}
+
+function handleTouchEnd() {
+  if (longPressTimer.value) {
+    clearTimeout(longPressTimer.value)
+    longPressTimer.value = null
   }
 }
 
