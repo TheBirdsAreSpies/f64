@@ -5,7 +5,6 @@
   "version": "0.0.1",
   "scripts": {
     "build": "nuxt build",
-    "build:winfix": "nuxt build && node fix-windows-build.mjs",
     "dev": "nuxt dev",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
