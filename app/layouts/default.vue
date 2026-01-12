@@ -2,9 +2,37 @@
   <div class="flex flex-col min-h-dvh overflow-x-hidden">
     <UHeader :to="localePath('/')">
       <template #title>
-        <div class="flex items-center gap-1.5 sm:gap-3">
-          <AppLogo class="w-6 h-6 sm:w-8 sm:h-8" />
-          <span class="text-lg sm:text-2xl font-bold">ƒ/64</span>
+        <div class="flex items-center gap-3">
+          <NuxtLink
+            :to="localePath('/')"
+            class="flex items-center gap-1.5 sm:gap-3"
+          >
+            <AppLogo class="w-6 h-6 sm:w-8 sm:h-8" />
+            <span class="text-lg sm:text-2xl font-bold">ƒ/64</span>
+          </NuxtLink>
+          <div class="hidden lg:block h-6 w-px bg-gray-200 dark:bg-gray-800" />
+          <UDropdownMenu
+            v-if="publicAlbums.length"
+            :items="albumMenuItems"
+            class="hidden lg:block"
+          >
+            <UButton
+              color="neutral"
+              variant="ghost"
+              trailing-icon="lucide:chevron-down"
+            >
+              {{ t('nav_albums') }}
+            </UButton>
+          </UDropdownMenu>
+          <UButton
+            v-else
+            :to="localePath('/albums')"
+            color="neutral"
+            variant="ghost"
+            class="hidden lg:flex"
+          >
+            {{ t('nav_albums') }}
+          </UButton>
         </div>
       </template>
       <template #right>
@@ -44,6 +72,28 @@
 
       <template #body>
         <div class="flex flex-col gap-4">
+          <div
+            v-if="publicAlbums.length"
+            class="flex flex-col gap-2"
+          >
+            <div class="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+              {{ t('nav_albums') }}
+            </div>
+            <div class="flex flex-col gap-1">
+              <UButton
+                v-for="album in publicAlbums"
+                :key="album.id"
+                :to="localePath(`/albums/${album.slug}`)"
+                color="neutral"
+                variant="ghost"
+                size="sm"
+                block
+              >
+                {{ album.title }}
+              </UButton>
+            </div>
+          </div>
+
           <LanguageSelector class="md:hidden" />
 
           <AuthState>
@@ -124,6 +174,35 @@
 <script setup lang="ts">
 const localePath = useLocalePath()
 const { t, d } = useI18n()
+
+const albumsStore = useAlbumsStore()
+
+const { data: albumsData } = await useFetch("/api/v1/albums", {
+  query: { limit: 100 },
+})
+
+// Sync fetched data to store
+if (albumsData.value?.albums) {
+  albumsStore.albums = albumsData.value.albums.map(album => ({
+    ...album,
+    createdAt: new Date(album.createdAt),
+    updatedAt: new Date(album.updatedAt),
+  })).sort((a, b) => a.title.localeCompare(b.title))
+}
+
+const publicAlbums = computed(() => {
+  return albumsStore.albums.filter(album => album.visibility !== "private")
+})
+
+const albumMenuItems = computed(() => {
+  if (!publicAlbums.value.length)
+    return []
+
+  return [publicAlbums.value.map(album => ({
+    label: album.title,
+    to: localePath(`/albums/${album.slug}`),
+  }))]
+})
 
 const appVersion = import.meta.env.APP_VERSION || "v1.0.0"
 const buildTimeISO = import.meta.env.BUILD_TIME || new Date().toISOString()
