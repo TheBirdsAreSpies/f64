@@ -86,7 +86,7 @@
               :class="album?.coverPhotoId === photo.id && 'ring-2 ring-primary-500'"
               @contextmenu.prevent="(e) => showPhotoMenu(photo, e)"
             >
-              <img
+              <NuxtImg
                 :src="photo.thumbnailPath"
                 :alt="photo.title"
                 class="h-full w-full object-cover transition-transform group-hover:scale-110"
@@ -95,6 +95,7 @@
                     ? `rotate(${photo.rotation}deg)`
                     : 'none',
                 }"
+                loading="lazy"
               />
               <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors pointer-events-none" />
               <UBadge
