@@ -6,6 +6,7 @@ echo "Starting application..."
 echo "Creating upload subdirectories..."
 mkdir -p /app/public/uploads/photos
 mkdir -p /app/public/uploads/thumbnails
+mkdir -p /app/public/uploads/blurred
 
 # Database setup
 echo "Checking database..."

@@ -94,6 +94,67 @@ export async function createThumbnail(originalPath: string, isRaw: boolean = fal
   }
 }
 
+export async function createBlurredPlaceholder(originalPath: string, isRaw: boolean = false): Promise<string> {
+  try {
+    const publicDir = path.join(process.cwd(), "public")
+    const fullPath = path.join(publicDir, originalPath)
+
+    const blurDir = path.join(publicDir, "uploads/blurred")
+    await fs.mkdir(blurDir, { recursive: true })
+
+    const ext = path.extname(originalPath)
+    const basename = path.basename(originalPath, ext)
+    const blurFilename = `${basename}.jpg`
+    const blurPath = path.join(blurDir, blurFilename)
+
+    let imageBuffer: Buffer
+    if (isRaw) {
+      const rawBuffer = await fs.readFile(fullPath)
+      imageBuffer = Buffer.from(dcraw(rawBuffer, { extractThumbnail: true }))
+    } else {
+      imageBuffer = await fs.readFile(fullPath)
+    }
+
+    const metadata = await sharp(imageBuffer).metadata()
+    const originalWidth = metadata.width || 1920
+    const originalHeight = metadata.height || 1080
+
+    const maxWidth = 1920
+    const maxHeight = 1080
+    const aspectRatio = originalWidth / originalHeight
+
+    let targetWidth = originalWidth
+    let targetHeight = originalHeight
+
+    if (targetWidth > maxWidth || targetHeight > maxHeight) {
+      if (aspectRatio > maxWidth / maxHeight) {
+        targetWidth = maxWidth
+        targetHeight = Math.round(maxWidth / aspectRatio)
+      } else {
+        targetHeight = maxHeight
+        targetWidth = Math.round(maxHeight * aspectRatio)
+      }
+    }
+
+    await sharp(imageBuffer)
+      .resize(100, Math.round(100 * targetHeight / targetWidth), {
+        fit: "inside",
+      })
+      .blur(10)
+      .resize(targetWidth, targetHeight, {
+        fit: "fill",
+        kernel: "nearest",
+      })
+      .jpeg({ quality: 60 })
+      .toFile(blurPath)
+
+    return `/uploads/blurred/${blurFilename}`
+  } catch (error) {
+    console.error("Error creating blurred placeholder:", error)
+    return originalPath
+  }
+}
+
 export async function extractImageMetadata(file: File, isRaw: boolean = false): Promise<{
   width?: number
   height?: number

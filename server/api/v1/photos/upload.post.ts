@@ -2,7 +2,7 @@ import { prisma } from "~~/lib/prisma"
 import { photoUploadSchema } from "~~/server/schemas/photo.schema"
 import { PhotoPermission } from "~~/server/types/permissions"
 import { checkPermission } from "~~/server/utils/checkPermission"
-import { calculateFileHash, createThumbnail, extractImageMetadata, saveUploadedFile } from "~~/server/utils/fileUpload"
+import { calculateFileHash, createBlurredPlaceholder, createThumbnail, extractImageMetadata, saveUploadedFile } from "~~/server/utils/fileUpload"
 
 export default defineEventHandler(async (event) => {
   const session = await requireAuth(event)
@@ -53,7 +53,8 @@ export default defineEventHandler(async (event) => {
 
   const { filename, path: originalPath, size } = await saveUploadedFile(file, "uploads/photos", isRawFile)
 
-  const thumbnailPath = await createThumbnail(originalPath, false)
+  const thumbnailPath = await createThumbnail(originalPath, isRawFile)
+  const blurredPlaceholder = await createBlurredPlaceholder(originalPath, isRawFile)
   const imageMetadata = await extractImageMetadata(file, isRawFile)
 
   const photo = await prisma.photo.create({
@@ -63,6 +64,7 @@ export default defineEventHandler(async (event) => {
       filename,
       originalPath,
       thumbnailPath,
+      blurredPath: blurredPlaceholder,
       fileSize: size,
       fileHash,
       mimeType: imageMetadata.mimeType,

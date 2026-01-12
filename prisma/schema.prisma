@@ -73,6 +73,7 @@ model Photo {
   filename      String
   originalPath  String
   thumbnailPath String
+  blurredPath   String?
   fileHash      String?   @unique
   width         Int?
   height        Int?
