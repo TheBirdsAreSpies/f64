@@ -23,6 +23,7 @@
   "upload_visibility_password": "Password Protected",
   "upload_tags_label": "Tags",
   "upload_tags_placeholder": "Add tags (comma separated)",
+  "upload_remove_one": "Remove",
   "upload_remove_all": "Remove All",
   "upload_button": "Upload {count} Photo",
   "upload_button_plural": "Upload {count} Photos",

@@ -34,6 +34,17 @@
                     :key="index"
                     class="relative aspect-square rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden"
                   >
+                    <UButton
+                      color="neutral"
+                      variant="ghost"
+                      size="xs"
+                      class="absolute top-2 right-2 z-10 bg-black/40 hover:bg-black/60"
+                      icon="lucide:x"
+                      :padded="false"
+                      @click="removeFile(index)"
+                    >
+                      {{ t('upload_remove_one') }}
+                    </UButton>
                     <img
                       v-if="item.preview"
                       :src="item.preview"
@@ -258,6 +269,16 @@ function removeAll() {
   })
   selectedFiles.value = []
   uploadedFiles.value = null
+}
+
+function removeFile(index: number) {
+  const item = selectedFiles.value[index]
+  if (!item)
+    return
+  if (item.preview)
+    URL.revokeObjectURL(item.preview)
+  selectedFiles.value.splice(index, 1)
+  uploadedFiles.value = selectedFiles.value.length > 0 ? selectedFiles.value.map(f => f.file) : null
 }
 
 function addTag() {
