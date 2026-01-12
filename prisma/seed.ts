@@ -117,12 +117,14 @@ async function main(): Promise<void> {
       firstName: "Admin",
       lastName: "User",
       roles: { connect: [{ id: adminRole.id }] },
+      emailVerified: true,
     },
     update: {
       password: adminPassword,
       firstName: "Admin",
       lastName: "User",
       roles: { connect: [{ id: adminRole.id }] },
+      emailVerified: true,
     },
   })
 
@@ -136,11 +138,13 @@ async function main(): Promise<void> {
       password: userPassword,
       firstName: "Test",
       lastName: "User",
+      emailVerified: true,
     },
     update: {
       password: userPassword,
       firstName: "Test",
       lastName: "User",
+      emailVerified: true,
     },
   })
 
