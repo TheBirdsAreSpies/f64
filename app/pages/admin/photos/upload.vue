@@ -35,10 +35,9 @@
                     class="relative aspect-square rounded-lg border border-gray-200 dark:border-gray-800 overflow-hidden"
                   >
                     <UButton
-                      color="neutral"
                       variant="ghost"
                       size="xs"
-                      class="absolute top-2 right-2 z-10 bg-black/40 hover:bg-black/60"
+                      class="absolute top-2 right-2 z-10 bg-black/40 text-white hover:bg-black/60"
                       icon="lucide:x"
                       :padded="false"
                       @click="removeFile(index)"
