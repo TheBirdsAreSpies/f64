@@ -15,6 +15,11 @@ export interface Album {
   updatedBy: string | null
   photos?: Photo[]
   tags?: Tag[]
+  coverPhoto?: {
+    thumbnailPath: string
+    title: string | null
+    rotation: number | null
+  }
   _count?: {
     photos?: number
   }
