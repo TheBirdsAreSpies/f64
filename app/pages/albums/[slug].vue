@@ -4,6 +4,7 @@
     <UModal
       v-model:open="showPasswordModal"
       :title="t('album_password_title')"
+      :close="false"
     >
       <template #body>
         <UForm
@@ -18,6 +19,7 @@
               v-model="albumPassword"
               type="password"
               :placeholder="t('album_password_placeholder')"
+              class="w-full"
             />
           </UFormField>
 
